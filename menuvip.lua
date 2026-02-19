@@ -1,5 +1,5 @@
 -- ==========================================
--- PRO MAX MOBILE EDITION V19 (REORGANIZED UI)
+-- PRO MAX MOBILE EDITION V20 (ALWAYS ON TOP)
 -- ==========================================
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -27,11 +27,15 @@ local Theme = {
     AccentOff = Color3.fromRGB(255, 71, 87),  
     Brand = Color3.fromRGB(0, 190, 255)       
 }
+
 -- [1. GIAO DIỆN CHÍNH]
 local gui = Instance.new("ScreenGui")
-gui.Name = "MobileProMax_V19"
+gui.Name = "MobileProMax_V20"
 gui.ResetOnSpawn = false
+gui.DisplayOrder = 99999 -- ÉP MENU NỔI LÊN TRÊN CÙNG MỌI GIAO DIỆN GAME CÓ SẴN
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 gui.Parent = player:WaitForChild("PlayerGui")
+
 -- [NÚT MỞ MENU & LOGIC KÉO THẢ NÚT]
 local openBtn = Instance.new("TextButton", gui)
 openBtn.Size = UDim2.new(0, 90, 0, 38)
@@ -69,6 +73,7 @@ UIS.InputEnded:Connect(function(input)
         btnDragToggle = false
     end
 end)
+
 -- KHUNG MENU CHÍNH
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0, 330, 0, 420)
@@ -89,6 +94,7 @@ local titleLabel = Instance.new("TextLabel", header)
 titleLabel.Size = UDim2.new(1, 0, 1, 0); titleLabel.BackgroundTransparency = 1
 titleLabel.Text = "🇻🇳 MENU VIP PRO 🇻🇳"
 titleLabel.TextColor3 = Theme.Brand; titleLabel.Font = Enum.Font.GothamBold; titleLabel.TextSize = 14
+
 -- [2. KÉO THẢ KHUNG MENU MƯỢT MÀ]
 local dragToggle, dragStart, startPos
 header.InputBegan:Connect(function(input)
@@ -103,6 +109,7 @@ UIS.InputChanged:Connect(function(input)
     end
 end)
 UIS.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragToggle = false end end)
+
 -- [3. HỆ THỐNG TAB HIỆN ĐẠI]
 local tabBar = Instance.new("Frame", frame)
 tabBar.Size = UDim2.new(1, 0, 0, 40)
@@ -150,15 +157,17 @@ tab2.MouseButton1Click:Connect(function() showTab(page2, tab2, ind2) end)
 tab3.MouseButton1Click:Connect(function() showTab(page3, tab3, ind3) end)
 tab4.MouseButton1Click:Connect(function() showTab(page4, tab4, ind4) end)
 showTab(page1, tab1, ind1)
+
 local opened = false
 openBtn.MouseButton1Click:Connect(function()
     if isDraggingBtn then return end 
     
     opened = not opened
-    openBtn.Text = opened and "ĐÓNG" or "Mở"
+    openBtn.Text = opened and "❌ ĐÓNG" or "✅ MENU"
     openStroke.Color = opened and Theme.AccentOff or Theme.Brand
     frame:TweenPosition(opened and UDim2.new(0.5, -165, 0.5, -210) or UDim2.new(0.5, -165, 1.2, 0), "Out", "Back", 0.4)
 end)
+
 -- [4. HÀM TẠO NÚT MENU]
 local function createButton(parent, text, color, callback)
     local btn = Instance.new("TextButton", parent)
@@ -171,6 +180,7 @@ local function createButton(parent, text, color, callback)
     btn.MouseButton1Click:Connect(callback)
     return btn
 end
+
 local function createToggle(parent, text, callback)
     local btn = Instance.new("TextButton", parent)
     btn.Size = UDim2.new(0.92, 0, 0, 44); btn.BackgroundColor3 = Theme.ItemBg; btn.Text = ""
@@ -196,6 +206,7 @@ local function createToggle(parent, text, callback)
         callback(active)
     end)
 end
+
 local function optimizePart(obj)
     if State.LowGfx then
         if obj:IsA("BasePart") or obj:IsA("MeshPart") then
@@ -207,6 +218,7 @@ local function optimizePart(obj)
         end
     end
 end
+
 -- [TAB 1: NHÂN VẬT]
 createToggle(page1, "🏃 Chạy nhanh", function(v) State.Speed = v end)
 createToggle(page1, "🦘 Nhảy cao", function(v) State.Jump = v end)
@@ -217,6 +229,7 @@ UIS.JumpRequest:Connect(function()
         if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end
     end
 end)
+
 -- [TAB 2: THẾ GIỚI]
 createToggle(page2, "👻 Xuyên tường", function(v) State.Noclip = v end)
 createToggle(page2, "🎮 Giảm Lag", function(v) 
@@ -243,6 +256,7 @@ createToggle(page2, "💡 Ánh sáng xung quanh", function(v)
 end)
 createButton(page2, "🌞 TRỜI SÁNG", Color3.fromRGB(243, 156, 18), function() Lighting.ClockTime = 12 end)
 createButton(page2, "🌚 TRỜI TỐI", Color3.fromRGB(52, 152, 219), function() Lighting.ClockTime = 0 end)
+
 -- [TAB 3: TIỆN ÍCH]
 createToggle(page3, "🖱️ Lấy vật phẩm nhanh", function(v) 
     State.Instant = v 
@@ -258,6 +272,7 @@ ProximityPromptService.PromptButtonHoldBegan:Connect(function(prompt)
     if State.Instant then pcall(function() fireproximityprompt(prompt) end) end
 end)
 createToggle(page3, "🛡️ Anti-AFK", function(v) State.AntiAfk = v end)
+
 -- CHUYỂN CÁC SCRIPT EXTERNAL QUA ĐÂY
 createButton(page3, "🕊️ KÍCH HOẠT FLY (SCRIPT)", Theme.Brand, function()
     pcall(function()
@@ -269,6 +284,7 @@ createButton(page3, "📂 Tp SAVE V2 (SCRIPT)", Theme.Brand, function()
         loadstring(game:HttpGet(('https://raw.githubusercontent.com/0Ben1/fe/main/Tp%20Place%20GUI'),true))()
     end)
 end)
+
 -- [TAB 4: VỊ TRÍ]
 local savedLocCount = 0
 local function createPosItem(name, cframe)
@@ -299,12 +315,14 @@ local function createPosItem(name, cframe)
     tpBtn.MouseButton1Click:Connect(function() if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then player.Character.HumanoidRootPart.CFrame = cframe end end)
     delBtn.MouseButton1Click:Connect(function() item:Destroy() end)
 end
+
 createButton(page4, "🎯 LƯU VỊ TRÍ HIỆN TẠI", Theme.AccentOn, function()
     if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
         savedLocCount = savedLocCount + 1
         createPosItem("📌 Vị trí " .. savedLocCount, player.Character.HumanoidRootPart.CFrame)
     end
 end)
+
 -- [VÒNG LẶP HỆ THỐNG CHÍNH]
 RunService.RenderStepped:Connect(function()
     local char = player.Character
@@ -338,8 +356,10 @@ RunService.RenderStepped:Connect(function()
         end
     end
 end)
+
 workspace.DescendantAdded:Connect(function(v)
     if State.LowGfx then optimizePart(v) end
     if State.Instant and v:IsA("ProximityPrompt") then v.HoldDuration = 0; v.MaxActivationDistance = 20 end
 end)
-print("PRO MAX V19 - MOVED EXTERNAL SCRIPTS LOADED!")
+
+print("PRO MAX V20 - UI OVERLAP FIXED!")
