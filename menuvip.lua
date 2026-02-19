@@ -155,7 +155,7 @@ openBtn.MouseButton1Click:Connect(function()
     if isDraggingBtn then return end 
     
     opened = not opened
-    openBtn.Text = opened and "❌ ĐÓNG" or "✅ MENU"
+    openBtn.Text = opened and "ĐÓNG" or "Mở"
     openStroke.Color = opened and Theme.AccentOff or Theme.Brand
     frame:TweenPosition(opened and UDim2.new(0.5, -165, 0.5, -210) or UDim2.new(0.5, -165, 1.2, 0), "Out", "Back", 0.4)
 end)
