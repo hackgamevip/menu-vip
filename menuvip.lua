@@ -1,5 +1,5 @@
 -- ==========================================
--- PRO MAX MOBILE EDITION V22.2 (FIX ICONS + FULL SCRIPTS)
+-menu vip pro v23 
 -- ==========================================
 repeat task.wait() until game:IsLoaded()
 
@@ -54,7 +54,7 @@ gui.Parent = guiParent
 local openBtn = Instance.new("TextButton", gui)
 openBtn.Size = UDim2.new(0, 100, 0, 42)
 openBtn.Position = UDim2.new(0, 15, 0, 15)
-openBtn.Text = "[+] MENU"
+openBtn.Text = "🛑 Mở"
 openBtn.BackgroundColor3 = Theme.MainBg
 openBtn.BackgroundTransparency = 0.1
 openBtn.TextColor3 = Theme.TextTitle
@@ -104,7 +104,7 @@ headerCover.BackgroundColor3 = Theme.HeaderBg; headerCover.BackgroundTransparenc
 
 local titleLabel = Instance.new("TextLabel", header)
 titleLabel.Size = UDim2.new(1, 0, 1, 0); titleLabel.BackgroundTransparency = 1
-titleLabel.Text = "🇻🇳 MENU VIP V23 🇻🇳"
+titleLabel.Text = " MENU VIP V23 "
 titleLabel.TextColor3 = Color3.new(1, 1, 1); titleLabel.Font = Enum.Font.GothamBlack; titleLabel.TextSize = 16
 local titleGradient = Instance.new("UIGradient", titleLabel)
 titleGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Theme.Brand), ColorSequenceKeypoint.new(1, Theme.BrandGradient)})
@@ -177,7 +177,7 @@ local opened = false
 openBtn.MouseButton1Click:Connect(function()
     clickAnimate(openBtn)
     opened = not opened
-    openBtn.Text = opened and "❌ ĐÓNG" or "🛑Mở"
+    openBtn.Text = opened and "❌ ĐÓNG" or "🛑 Mở"
     TweenService:Create(openStroke, TweenInfo.new(0.3), {Color = opened and Theme.AccentOff or Theme.Brand}):Play()
     frame:TweenPosition(opened and UDim2.new(0.5, -170, 0.5, -220) or UDim2.new(0.5, -170, 1.2, 0), "Out", "Back", 0.5)
 end)
@@ -246,33 +246,33 @@ local function optimizePart(obj)
 end
 
 -- [TAB 1: NHÂN VẬT]
-createToggle(page1, "[🏃] Chạy nhanh", function(v) State.Speed = v end)
-createToggle(page1, "[🦘] Nhảy siêu cao", function(v) State.Jump = v end)
-createToggle(page1, "[🚀] Nhảy trên không", function(v) State.InfJump = v end) 
+createToggle(page1, "🏃 Chạy nhanh", function(v) State.Speed = v end)
+createToggle(page1, "🦘 Nhảy siêu cao", function(v) State.Jump = v end)
+createToggle(page1, "🚀 Nhảy trên không", function(v) State.InfJump = v end) 
 UIS.JumpRequest:Connect(function() if State.InfJump and player.Character then local hum = player.Character:FindFirstChildOfClass("Humanoid") if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end end end)
 
 -- [TAB 2: BẢN ĐỒ]
-createToggle(page2, "[👻] Đi xuyên tường", function(v) State.Noclip = v end)
-createToggle(page2, "[🕹️] Giảm Lag (Low GFX)", function(v) 
+createToggle(page2, "👻 Đi xuyên tường", function(v) State.Noclip = v end)
+createToggle(page2, "🕹️ Giảm Lag (Low GFX)", function(v) 
     State.LowGfx = v 
     if v then Lighting.GlobalShadows = false; pcall(function() settings().Rendering.QualityLevel = 1 end); for _, obj in pairs(workspace:GetDescendants()) do optimizePart(obj) end
     else Lighting.GlobalShadows = true; pcall(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic end) end
 end)
-createToggle(page2, "[👀] Định vị người chơi (ESP)", function(v) State.ESP = v end)
-createToggle(page2, "[💡] Ánh sáng quanh người", function(v) 
+createToggle(page2, "👀 Định vị người chơi (ESP)", function(v) State.ESP = v end)
+createToggle(page2, "💡 Ánh sáng quanh người", function(v) 
     State.PlayerLight = v 
     if not v and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then local light = player.Character.HumanoidRootPart:FindFirstChild("PlayerPointLight"); if light then light:Destroy() end end
 end)
-createButton(page2, "[🌞] Chỉnh Trời Sáng", Color3.fromRGB(243, 156, 18), function() Lighting.ClockTime = 12 end)
-createButton(page2, "[🌚] Chỉnh Trời Tối", Color3.fromRGB(160, 32, 240), function() Lighting.ClockTime = 0 end)
+createButton(page2, "🌞 Chỉnh Trời Sáng", Color3.fromRGB(243, 156, 18), function() Lighting.ClockTime = 12 end)
+createButton(page2, "🌚 Chỉnh Trời Tối", Color3.fromRGB(160, 32, 240), function() Lighting.ClockTime = 0 end)
 
 -- [TAB 3: TIỆN ÍCH - ĐÃ THÊM LẠI SCRIPTS]
-createToggle(page3, "[🐿️] Lấy đồ nhanh (Mở hòm)", function(v) 
+createToggle(page3, "🐿️ Lấy đồ nhanh ", function(v) 
     State.Instant = v 
     if v then for _, prompt in pairs(workspace:GetDescendants()) do if prompt:IsA("ProximityPrompt") then prompt.HoldDuration = 0; prompt.MaxActivationDistance = 25 end end end
 end)
 ProximityPromptService.PromptButtonHoldBegan:Connect(function(prompt) if State.Instant then pcall(function() fireproximityprompt(prompt) end) end end)
-createToggle(page3, "[🛡️] Chống bị kick (Anti-AFK)", function(v) State.AntiAfk = v end)
+createToggle(page3, "🛡️ Chống bị kick (Anti-AFK)", function(v) State.AntiAfk = v end)
 
 -- Script FLY
 createButton(page3, " FLY (script)", Theme.Brand, function()
@@ -303,22 +303,22 @@ local function createPosItem(name, cframe)
     
     local tpBtn = Instance.new("TextButton", item)
     tpBtn.Size = UDim2.new(0.25, 0, 0.6, 0); tpBtn.Position = UDim2.new(0.53, 0, 0.2, 0)
-    tpBtn.Text = "BAY"; tpBtn.BackgroundColor3 = Theme.Brand; tpBtn.TextColor3 = Color3.new(1,1,1)
+    tpBtn.Text = "TP"; tpBtn.BackgroundColor3 = Theme.Brand; tpBtn.TextColor3 = Color3.new(1,1,1)
     tpBtn.Font = Enum.Font.GothamBold; tpBtn.TextSize = 11; Instance.new("UICorner", tpBtn).CornerRadius = UDim.new(0, 6)
     
     local delBtn = Instance.new("TextButton", item)
     delBtn.Size = UDim2.new(0.15, 0, 0.6, 0); delBtn.Position = UDim2.new(0.81, 0, 0.2, 0)
-    delBtn.Text = "X"; delBtn.BackgroundColor3 = Theme.AccentOff; delBtn.TextColor3 = Color3.new(1,1,1)
+    delBtn.Text = "x"; delBtn.BackgroundColor3 = Theme.AccentOff; delBtn.TextColor3 = Color3.new(1,1,1)
     delBtn.Font = Enum.Font.GothamBold; delBtn.TextSize = 12; Instance.new("UICorner", delBtn).CornerRadius = UDim.new(0, 6)
     
     tpBtn.MouseButton1Click:Connect(function() clickAnimate(tpBtn); if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then player.Character.HumanoidRootPart.CFrame = cframe end end)
     delBtn.MouseButton1Click:Connect(function() clickAnimate(delBtn); task.wait(0.1); item:Destroy() end)
 end
 
-createButton(page4, "[📌] LƯU TỌA ĐỘ ĐANG ĐỨNG", Theme.AccentOn, function()
+createButton(page4, "🎯 LƯU TỌA ĐỘ ĐANG ĐỨNG", Theme.AccentOn, function()
     if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
         savedLocCount = savedLocCount + 1
-        createPosItem("Vị trí " .. savedLocCount, player.Character.HumanoidRootPart.CFrame)
+        createPosItem("📌 Vị trí " .. savedLocCount, player.Character.HumanoidRootPart.CFrame)
     end
 end)
 
@@ -331,7 +331,7 @@ local function updatePlayerList()
             local pFrame = Instance.new("Frame", page5); pFrame.Name = "PaddingFrame"; pFrame.Size = UDim2.new(0.9, 0, 0, 44); pFrame.BackgroundTransparency = 1
             local btn = Instance.new("TextButton", pFrame)
             btn.Name = "PlayerBtn_TP"; btn.Size = UDim2.new(1, 0, 1, 0); btn.BackgroundColor3 = Theme.ItemBg; btn.AutoButtonColor = false
-            btn.Text = "  > " .. p.DisplayName
+            btn.Text = " 👤 " .. p.DisplayName
             btn.TextColor3 = Theme.TextTitle; btn.Font = Enum.Font.GothamSemibold; btn.TextSize = 13; btn.TextXAlignment = Enum.TextXAlignment.Left
             Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
             local stroke = Instance.new("UIStroke", btn); stroke.Color = Theme.Stroke; stroke.Thickness = 1
@@ -351,7 +351,7 @@ local function updatePlayerList()
         end
     end
 end
-createButton(page5, "[🔄] LÀM MỚI DANH SÁCH", Theme.Brand, updatePlayerList)
+createButton(page5, "🔄 LÀM MỚI DANH SÁCH", Theme.Brand, updatePlayerList)
 updatePlayerList()
 
 -- [VÒNG LẶP HỆ THỐNG]
