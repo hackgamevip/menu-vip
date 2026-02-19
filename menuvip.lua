@@ -1,6 +1,5 @@
-on = 0; v.MaxActivationDistance = 20 end
-end)-- ==========================================
--- PRO MAX MOBILE EDITION V22 (GLASSMORPHISM & NEON UI)
+-- ==========================================
+-- PRO MAX MOBILE EDITION V22.1 (FIXED GUI TÀNG HÌNH)
 -- ==========================================
 repeat task.wait() until game:IsLoaded()
 
@@ -20,32 +19,37 @@ local State = {
 
 -- [BẢNG MÀU CHỦ ĐẠO - PHONG CÁCH NEON TỐI]
 local Theme = {
-    MainBg = Color3.fromRGB(15, 15, 20),      -- Đen sâu
+    MainBg = Color3.fromRGB(15, 15, 20),      
     HeaderBg = Color3.fromRGB(22, 22, 28),
     TabBg = Color3.fromRGB(20, 20, 26),
     ItemBg = Color3.fromRGB(30, 30, 38),
     Stroke = Color3.fromRGB(70, 70, 85),
     TextTitle = Color3.fromRGB(255, 255, 255),
     TextDim = Color3.fromRGB(150, 150, 165),
-    AccentOn = Color3.fromRGB(0, 255, 128),   -- Xanh Neon
-    AccentOff = Color3.fromRGB(255, 60, 80),  -- Đỏ Neon
-    Brand = Color3.fromRGB(0, 190, 255),      -- Xanh dương Brand
-    BrandGradient = Color3.fromRGB(160, 32, 240) -- Tím Gradient
+    AccentOn = Color3.fromRGB(0, 255, 128),   
+    AccentOff = Color3.fromRGB(255, 60, 80),  
+    Brand = Color3.fromRGB(0, 190, 255),      
+    BrandGradient = Color3.fromRGB(160, 32, 240) 
 }
 
--- [1. GIAO DIỆN CHÍNH]
+-- [1. GIAO DIỆN CHÍNH - FIX LỖI KHÔNG HIỆN MENU]
 local gui = Instance.new("ScreenGui")
-gui.Name = "MobileProMax_V22"
+gui.Name = "MobileProMax_V22_Fixed"
 gui.ResetOnSpawn = false
 gui.DisplayOrder = 99999
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 
-if gethui then
-    gui.Parent = gethui()
-else
-    local success, coreGui = pcall(function() return game:GetService("CoreGui") end)
-    if success and coreGui then gui.Parent = coreGui else gui.Parent = player:WaitForChild("PlayerGui") end
-end
+-- Thuật toán ép hiển thị GUI an toàn tuyệt đối
+local guiParent = player:WaitForChild("PlayerGui") -- Mặc định gắn thẳng vào người chơi
+pcall(function()
+    if gethui and type(gethui) == "function" then
+        local hui = gethui()
+        if hui then guiParent = hui end
+    elseif game:GetService("CoreGui") then
+        guiParent = game:GetService("CoreGui")
+    end
+end)
+gui.Parent = guiParent
 
 -- [NÚT MỞ MENU - THIẾT KẾ DẠNG PILL (VIÊN THUỐC)]
 local openBtn = Instance.new("TextButton", gui)
@@ -57,11 +61,10 @@ openBtn.BackgroundTransparency = 0.1
 openBtn.TextColor3 = Theme.TextTitle
 openBtn.Font = Enum.Font.GothamBlack
 openBtn.TextSize = 12
-Instance.new("UICorner", openBtn).CornerRadius = UDim.new(1, 0) -- Bo tròn hoàn toàn
+Instance.new("UICorner", openBtn).CornerRadius = UDim.new(1, 0)
 local openStroke = Instance.new("UIStroke", openBtn)
 openStroke.Color = Theme.Brand; openStroke.Thickness = 2; openStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
--- Hiệu ứng nút mở
 local function clickAnimate(obj)
     local scale = Instance.new("UIScale", obj)
     TweenService:Create(scale, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Scale = 0.9}):Play()
@@ -83,12 +86,12 @@ UIS.InputChanged:Connect(function(input)
 end)
 UIS.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then btnDragToggle = false end end)
 
--- [KHUNG CHÍNH MENU - HIỆU ỨNG KÍNH MỜ (GLASSMORPHISM)]
+-- [KHUNG CHÍNH MENU - HIỆU ỨNG KÍNH MỜ]
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0, 340, 0, 440)
 frame.Position = UDim2.new(0.5, -170, 1.2, 0)
 frame.BackgroundColor3 = Theme.MainBg
-frame.BackgroundTransparency = 0.15 -- Trong suốt nhẹ
+frame.BackgroundTransparency = 0.15 
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 16)
 local frameStroke = Instance.new("UIStroke", frame); frameStroke.Color = Theme.Stroke; frameStroke.Thickness = 1.5
 
@@ -100,16 +103,12 @@ local headerCover = Instance.new("Frame", header)
 headerCover.Size = UDim2.new(1, 0, 0, 15); headerCover.Position = UDim2.new(0, 0, 1, -15)
 headerCover.BackgroundColor3 = Theme.HeaderBg; headerCover.BackgroundTransparency = 0.1; headerCover.BorderSizePixel = 0
 
--- Chữ Title có Gradient sang trọng
 local titleLabel = Instance.new("TextLabel", header)
 titleLabel.Size = UDim2.new(1, 0, 1, 0); titleLabel.BackgroundTransparency = 1
 titleLabel.Text = "✧ V22 PRO MAX ✧"
 titleLabel.TextColor3 = Color3.new(1, 1, 1); titleLabel.Font = Enum.Font.GothamBlack; titleLabel.TextSize = 16
 local titleGradient = Instance.new("UIGradient", titleLabel)
-titleGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Theme.Brand),
-    ColorSequenceKeypoint.new(1, Theme.BrandGradient)
-})
+titleGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Theme.Brand), ColorSequenceKeypoint.new(1, Theme.BrandGradient)})
 
 -- [KÉO THẢ MENU]
 local dragToggle, dragStart, startPos
@@ -123,7 +122,7 @@ UIS.InputChanged:Connect(function(input)
 end)
 UIS.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragToggle = false end end)
 
--- [HỆ THỐNG TAB HIỆN ĐẠI]
+-- [HỆ THỐNG TAB]
 local tabBar = Instance.new("Frame", frame)
 tabBar.Size = UDim2.new(1, 0, 0, 35); tabBar.Position = UDim2.new(0, 0, 0, 45)
 tabBar.BackgroundColor3 = Theme.TabBg; tabBar.BackgroundTransparency = 0.5; tabBar.BorderSizePixel = 0
@@ -165,7 +164,6 @@ local function showTab(pg, tb, ind)
     for _, t in pairs({tab1, tab2, tab3, tab4, tab5}) do t.TextColor3 = Theme.TextDim end
     for _, i in pairs({ind1, ind2, ind3, ind4, ind5}) do i.Visible = false end
     pg.Visible = true; tb.TextColor3 = Theme.TextTitle; ind.Visible = true
-    -- Anim chuyển tab
     ind.Size = UDim2.new(0, 0, 0, 3)
     TweenService:Create(ind, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0.5, 0, 0, 3)}):Play()
 end
@@ -191,8 +189,7 @@ local function createButton(parent, text, color, callback)
     btnFrame.Size = UDim2.new(0.9, 0, 0, 44); btnFrame.BackgroundTransparency = 1
     
     local btn = Instance.new("TextButton", btnFrame)
-    btn.Size = UDim2.new(1, 0, 1, 0); btn.BackgroundColor3 = Theme.ItemBg; btn.Text = ""
-    btn.AutoButtonColor = false -- Tắt màu mặc định để tự làm hiệu ứng
+    btn.Size = UDim2.new(1, 0, 1, 0); btn.BackgroundColor3 = Theme.ItemBg; btn.Text = ""; btn.AutoButtonColor = false
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
     local stroke = Instance.new("UIStroke", btn); stroke.Color = color; stroke.Thickness = 1.2; stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     
@@ -276,7 +273,7 @@ end)
 ProximityPromptService.PromptButtonHoldBegan:Connect(function(prompt) if State.Instant then pcall(function() fireproximityprompt(prompt) end) end end)
 createToggle(page3, "🛡️ Chống bị kích (Anti-AFK)", function(v) State.AntiAfk = v end)
 
--- [TAB 4: VỊ TRÍ - DESIGN LẠI UI]
+-- [TAB 4: VỊ TRÍ]
 local savedLocCount = 0
 local function createPosItem(name, cframe)
     local item = Instance.new("Frame", page4)
