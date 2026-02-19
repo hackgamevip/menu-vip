@@ -121,17 +121,19 @@ local function createTab(name, x, width)
     btn.Size = UDim2.new(width, 0, 1, 0)
     btn.Position = UDim2.new(x, 0, 0, 0)
     btn.Text = name; btn.BackgroundTransparency = 1
-    btn.TextColor3 = Theme.TextDim; btn.Font = Enum.Font.GothamBold; btn.TextSize = 11
+    btn.TextColor3 = Theme.TextDim; btn.Font = Enum.Font.GothamBold; btn.TextSize = 10
     local indicator = Instance.new("Frame", btn)
     indicator.Size = UDim2.new(0.6, 0, 0, 3); indicator.Position = UDim2.new(0.2, 0, 1, -3)
     indicator.BackgroundColor3 = Theme.Brand; indicator.BorderSizePixel = 0; indicator.Visible = false
     Instance.new("UICorner", indicator).CornerRadius = UDim.new(1, 0)
     return btn, indicator
 end
-local tab1, ind1 = createTab("🤵NHÂN VẬT", 0, 0.25)
-local tab2, ind2 = createTab("🌍THẾ GIỚI", 0.25, 0.25)
-local tab3, ind3 = createTab("💻TIỆN ÍCH", 0.50, 0.25)
-local tab4, ind4 = createTab("📍SAVE V1", 0.75, 0.25)
+local tab1, ind1 = createTab("🤵NHÂN", 0, 0.2)
+local tab2, ind2 = createTab("🌍MAP", 0.2, 0.2)
+local tab3, ind3 = createTab("💻TOOL", 0.4, 0.2)
+local tab4, ind4 = createTab("📍SAVE", 0.6, 0.2)
+local tab5, ind5 = createTab("🚀TP", 0.8, 0.2)
+
 local pageContainer = Instance.new("Frame", frame)
 pageContainer.Size = UDim2.new(1, 0, 1, -80); pageContainer.Position = UDim2.new(0, 0, 0, 80)
 pageContainer.BackgroundTransparency = 1
@@ -145,17 +147,20 @@ local function createPage()
     Instance.new("UIPadding", pg).PaddingTop = UDim.new(0, 10); Instance.new("UIPadding", pg).PaddingBottom = UDim.new(0, 10)
     return pg
 end
-local page1, page2, page3, page4 = createPage(), createPage(), createPage(), createPage()
+local page1, page2, page3, page4, page5 = createPage(), createPage(), createPage(), createPage(), createPage()
+
 local function showTab(pg, tb, ind)
-    page1.Visible = false; page2.Visible = false; page3.Visible = false; page4.Visible = false
-    tab1.TextColor3 = Theme.TextDim; tab2.TextColor3 = Theme.TextDim; tab3.TextColor3 = Theme.TextDim; tab4.TextColor3 = Theme.TextDim
-    ind1.Visible = false; ind2.Visible = false; ind3.Visible = false; ind4.Visible = false
+    page1.Visible = false; page2.Visible = false; page3.Visible = false; page4.Visible = false; page5.Visible = false
+    tab1.TextColor3 = Theme.TextDim; tab2.TextColor3 = Theme.TextDim; tab3.TextColor3 = Theme.TextDim; tab4.TextColor3 = Theme.TextDim; tab5.TextColor3 = Theme.TextDim
+    ind1.Visible = false; ind2.Visible = false; ind3.Visible = false; ind4.Visible = false; ind5.Visible = false
     pg.Visible = true; tb.TextColor3 = Theme.TextTitle; ind.Visible = true
 end
+
 tab1.MouseButton1Click:Connect(function() showTab(page1, tab1, ind1) end)
 tab2.MouseButton1Click:Connect(function() showTab(page2, tab2, ind2) end)
 tab3.MouseButton1Click:Connect(function() showTab(page3, tab3, ind3) end)
 tab4.MouseButton1Click:Connect(function() showTab(page4, tab4, ind4) end)
+tab5.MouseButton1Click:Connect(function() showTab(page5, tab5, ind5) end)
 showTab(page1, tab1, ind1)
 
 local opened = false
@@ -273,7 +278,6 @@ ProximityPromptService.PromptButtonHoldBegan:Connect(function(prompt)
 end)
 createToggle(page3, "🛡️ Anti-AFK", function(v) State.AntiAfk = v end)
 
--- CHUYỂN CÁC SCRIPT EXTERNAL QUA ĐÂY
 createButton(page3, "🕊️ KÍCH HOẠT FLY (SCRIPT)", Theme.Brand, function()
     pcall(function()
         loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\40\39\104\116\116\112\115\58\47\47\103\105\115\116\46\103\105\116\104\117\98\117\115\101\114\99\111\110\116\101\110\116\46\99\111\109\47\109\101\111\122\111\110\101\89\84\47\98\102\48\51\55\100\102\102\57\102\48\97\55\48\48\49\55\51\48\52\100\100\100\54\55\102\100\99\100\51\55\48\47\114\97\119\47\101\49\52\101\55\52\102\52\50\53\98\48\54\48\100\102\53\50\51\51\52\51\99\102\51\48\98\55\56\55\48\55\52\101\98\51\99\53\100\50\47\97\114\99\101\117\115\37\50\53\50\48\120\37\50\53\50\48\102\108\121\37\50\53\50\48\50\37\50\53\50\48\111\98\102\108\117\99\97\116\111\114\39\41\44\116\114\117\101\41\41\40\41\10\10")()
@@ -323,6 +327,45 @@ createButton(page4, "🎯 LƯU VỊ TRÍ HIỆN TẠI", Theme.AccentOn, function
     end
 end)
 
+-- [TAB 5: TP ĐẾN NGƯỜI CHƠI]
+local tpPlayerFrame = Instance.new("Frame", page5)
+tpPlayerFrame.Size = UDim2.new(0.92, 0, 0, 48)
+tpPlayerFrame.BackgroundColor3 = Theme.ItemBg
+Instance.new("UICorner", tpPlayerFrame).CornerRadius = UDim.new(0, 8)
+local tpStroke = Instance.new("UIStroke", tpPlayerFrame)
+tpStroke.Color = Theme.Stroke; tpStroke.Thickness = 1
+
+local playerBox = Instance.new("TextBox", tpPlayerFrame)
+playerBox.Size = UDim2.new(0.65, 0, 1, 0); playerBox.Position = UDim2.new(0.05, 0, 0, 0)
+playerBox.BackgroundTransparency = 1
+playerBox.PlaceholderText = "Nhập tên người chơi..."
+playerBox.Text = ""; playerBox.TextColor3 = Theme.TextTitle
+playerBox.Font = Enum.Font.GothamSemibold; playerBox.TextSize = 12
+playerBox.TextXAlignment = Enum.TextXAlignment.Left
+playerBox.ClearTextOnFocus = false
+
+local tpPlayerBtn = Instance.new("TextButton", tpPlayerFrame)
+tpPlayerBtn.Size = UDim2.new(0.25, 0, 0.65, 0); tpPlayerBtn.Position = UDim2.new(0.72, 0, 0.175, 0)
+tpPlayerBtn.BackgroundColor3 = Theme.Brand; tpPlayerBtn.Text = "TP ĐẾN"
+tpPlayerBtn.TextColor3 = Color3.new(1,1,1)
+tpPlayerBtn.Font = Enum.Font.GothamBold; tpPlayerBtn.TextSize = 11
+Instance.new("UICorner", tpPlayerBtn).CornerRadius = UDim.new(0, 6)
+
+tpPlayerBtn.MouseButton1Click:Connect(function()
+    local targetName = string.lower(playerBox.Text)
+    if targetName == "" then return end
+    
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= player and (string.find(string.lower(p.Name), targetName) or string.find(string.lower(p.DisplayName), targetName)) then
+            if p.Character and p.Character:FindFirstChild("HumanoidRootPart") and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                player.Character.HumanoidRootPart.CFrame = p.Character.HumanoidRootPart.CFrame
+                playerBox.Text = p.Name 
+                break
+            end
+        end
+    end
+end)
+
 -- [VÒNG LẶP HỆ THỐNG CHÍNH]
 RunService.RenderStepped:Connect(function()
     local char = player.Character
@@ -362,4 +405,4 @@ workspace.DescendantAdded:Connect(function(v)
     if State.Instant and v:IsA("ProximityPrompt") then v.HoldDuration = 0; v.MaxActivationDistance = 20 end
 end)
 
-print("PRO MAX V20 - UI OVERLAP FIXED!")
+print("PRO MAX V20 - ĐÃ TH
