@@ -1,6 +1,8 @@
 -- ==========================================
--- PRO MAX MOBILE EDITION V20 (ALWAYS ON TOP)
+-- PRO MAX MOBILE EDITION V20 (FIXED GUI KHÔNG HIỆN)
 -- ==========================================
+repeat task.wait() until game:IsLoaded() -- ĐỢI GAME LOAD XONG TRÁNH LỖI
+
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
@@ -9,11 +11,13 @@ local UIS = game:GetService("UserInputService")
 local VirtualUser = game:GetService("VirtualUser")
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local player = Players.LocalPlayer
+
 local State = {
     Instant = false, Noclip = false, LowGfx = false, Speed = false, Jump = false,
     InfJump = false, PlayerLight = false, ESP = false, AntiAfk = false,
     SpeedValue = 60, JumpValue = 120
 }
+
 -- [BẢNG MÀU CHỦ ĐẠO - THEME]
 local Theme = {
     MainBg = Color3.fromRGB(20, 20, 25),
@@ -28,13 +32,24 @@ local Theme = {
     Brand = Color3.fromRGB(0, 190, 255)       
 }
 
--- [1. GIAO DIỆN CHÍNH]
+-- [1. GIAO DIỆN CHÍNH - FIX LỖI KHÔNG HIỆN]
 local gui = Instance.new("ScreenGui")
-gui.Name = "MobileProMax_V20"
+gui.Name = "MobileProMax_V20_Fixed"
 gui.ResetOnSpawn = false
-gui.DisplayOrder = 99999 -- ÉP MENU NỔI LÊN TRÊN CÙNG MỌI GIAO DIỆN GAME CÓ SẴN
+gui.DisplayOrder = 99999
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
-gui.Parent = player:WaitForChild("PlayerGui")
+
+-- LOGIC ĐƯA UI VÀO MÀN HÌNH (HỖ TRỢ MỌI EXECUTOR)
+if gethui then
+    gui.Parent = gethui()
+else
+    local success, coreGui = pcall(function() return game:GetService("CoreGui") end)
+    if success and coreGui then
+        gui.Parent = coreGui
+    else
+        gui.Parent = player:WaitForChild("PlayerGui")
+    end
+end
 
 -- [NÚT MỞ MENU & LOGIC KÉO THẢ NÚT]
 local openBtn = Instance.new("TextButton", gui)
@@ -49,6 +64,7 @@ openBtn.Active = true
 Instance.new("UICorner", openBtn).CornerRadius = UDim.new(1, 0)
 local openStroke = Instance.new("UIStroke", openBtn)
 openStroke.Color = Theme.Brand; openStroke.Thickness = 1.5; openStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
 local btnDragToggle, btnDragStart, btnStartPos
 local isDraggingBtn = false
 openBtn.InputBegan:Connect(function(input)
@@ -356,7 +372,11 @@ tpPlayerBtn.MouseButton1Click:Connect(function()
     if targetName == "" then return end
     
     for _, p in pairs(Players:GetPlayers()) do
-        if p ~= player and (string.find(string.lower(p.Name), targetName) or string.find(string.lower(p.DisplayName), targetName)) then
+        local lowerName = string.lower(p.Name)
+        local lowerDisplay = string.lower(p.DisplayName)
+        
+        -- Dùng true để tránh lỗi dấu câu khi tìm kiếm chuỗi
+        if p ~= player and (string.find(lowerName, targetName, 1, true) or string.find(lowerDisplay, targetName, 1, true)) then
             if p.Character and p.Character:FindFirstChild("HumanoidRootPart") and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
                 player.Character.HumanoidRootPart.CFrame = p.Character.HumanoidRootPart.CFrame
                 playerBox.Text = p.Name 
@@ -405,4 +425,4 @@ workspace.DescendantAdded:Connect(function(v)
     if State.Instant and v:IsA("ProximityPrompt") then v.HoldDuration = 0; v.MaxActivationDistance = 20 end
 end)
 
-print("PRO MAX V20 - ĐÃ TH
+print("PRO MAX V20 - ĐÃ FIX LỖI KHÔNG HIỆN MENU!")
