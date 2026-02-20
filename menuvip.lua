@@ -348,7 +348,7 @@ local function createPosItem(name, cframe)
 end
 createButton(page4, "🎯 LƯU TỌA ĐỘ ĐANG ĐỨNG", Theme.AccentOn, function()
     if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        savedLocCount = savedLocCount + 1 (đổi tên)
+        savedLocCount = savedLocCount + 1
         createPosItem("📌 Vị trí " .. savedLocCount, player.Character.HumanoidRootPart.CFrame)
     end
 end)
