@@ -1,5 +1,5 @@
 -- ==========================================
---menu vip pro v23 
+-- MENU VIP PRO V24 (CẬP NHẬT TÍNH NĂNG & FIX LỖI)
 -- ==========================================
 repeat task.wait() until game:IsLoaded()
 
@@ -9,6 +9,7 @@ local RunService = game:GetService("RunService")
 local Lighting = game:GetService("Lighting")
 local UIS = game:GetService("UserInputService")
 local ProximityPromptService = game:GetService("ProximityPromptService")
+local VirtualUser = game:GetService("VirtualUser") -- Thêm thư viện để làm Anti-AFK
 local player = Players.LocalPlayer
 
 local State = {
@@ -34,7 +35,7 @@ local Theme = {
 
 -- [1. GIAO DIỆN CHÍNH]
 local gui = Instance.new("ScreenGui")
-gui.Name = "MobileProMax_V22_2"
+gui.Name = "MobileProMax_V24"
 gui.ResetOnSpawn = false
 gui.DisplayOrder = 99999
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
@@ -104,7 +105,7 @@ headerCover.BackgroundColor3 = Theme.HeaderBg; headerCover.BackgroundTransparenc
 
 local titleLabel = Instance.new("TextLabel", header)
 titleLabel.Size = UDim2.new(1, 0, 1, 0); titleLabel.BackgroundTransparency = 1
-titleLabel.Text = " MENU VIP V23 "
+titleLabel.Text = " MENU VIP V24 "
 titleLabel.TextColor3 = Color3.new(1, 1, 1); titleLabel.Font = Enum.Font.GothamBlack; titleLabel.TextSize = 16
 local titleGradient = Instance.new("UIGradient", titleLabel)
 titleGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Theme.Brand), ColorSequenceKeypoint.new(1, Theme.BrandGradient)})
@@ -140,7 +141,7 @@ local tab1, ind1 = createTab("NHÂN VẬT", 0, 0.2)
 local tab2, ind2 = createTab("BẢN ĐỒ", 0.2, 0.2)
 local tab3, ind3 = createTab("TIỆN ÍCH", 0.4, 0.2)
 local tab4, ind4 = createTab("TP SAVE", 0.6, 0.2)
-local tab5, ind5 = createTab("TP player", 0.8, 0.2)
+local tab5, ind5 = createTab("TP PLAYER", 0.8, 0.2)
 
 local pageContainer = Instance.new("Frame", frame)
 pageContainer.Size = UDim2.new(1, 0, 1, -90); pageContainer.Position = UDim2.new(0, 0, 0, 85)
@@ -245,14 +246,30 @@ local function optimizePart(obj)
     end
 end
 
+-- ==============================================
+-- [NỘI DUNG TỪNG TAB]
+-- ==============================================
+
 -- [TAB 1: NHÂN VẬT]
 createToggle(page1, "🏃 Chạy nhanh", function(v) State.Speed = v end)
 createToggle(page1, "🦘 Nhảy siêu cao", function(v) State.Jump = v end)
 createToggle(page1, "🚀 Nhảy trên không", function(v) State.InfJump = v end) 
-UIS.JumpRequest:Connect(function() if State.InfJump and player.Character then local hum = player.Character:FindFirstChildOfClass("Humanoid") if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end end end)
+createToggle(page1, "🎈 Trọng lực yếu (Bay lơ lửng)", function(v) 
+    if v then workspace.Gravity = 50 else workspace.Gravity = 196.2 end 
+end)
+
+UIS.JumpRequest:Connect(function() 
+    if State.InfJump and player.Character then 
+        local hum = player.Character:FindFirstChildOfClass("Humanoid") 
+        if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end 
+    end 
+end)
 
 -- [TAB 2: BẢN ĐỒ]
 createToggle(page2, "👻 Đi xuyên tường", function(v) State.Noclip = v end)
+createToggle(page2, "🔭 Góc nhìn siêu rộng (FOV)", function(v) 
+    if v then workspace.CurrentCamera.FieldOfView = 120 else workspace.CurrentCamera.FieldOfView = 70 end 
+end)
 createToggle(page2, "🕹️ Giảm Lag (Low GFX)", function(v) 
     State.LowGfx = v 
     if v then Lighting.GlobalShadows = false; pcall(function() settings().Rendering.QualityLevel = 1 end); for _, obj in pairs(workspace:GetDescendants()) do optimizePart(obj) end
@@ -266,26 +283,31 @@ end)
 createButton(page2, "🌞 Chỉnh Trời Sáng", Color3.fromRGB(243, 156, 18), function() Lighting.ClockTime = 12 end)
 createButton(page2, "🌚 Chỉnh Trời Tối", Color3.fromRGB(160, 32, 240), function() Lighting.ClockTime = 0 end)
 
--- [TAB 3: TIỆN ÍCH - ĐÃ THÊM LẠI SCRIPTS]
-createToggle(page3, "🐿️ Lấy đồ nhanh ", function(v) 
+-- [TAB 3: TIỆN ÍCH]
+createToggle(page3, "🐿️ Lấy đồ nhanh (Bỏ qua thời gian)", function(v) 
     State.Instant = v 
     if v then for _, prompt in pairs(workspace:GetDescendants()) do if prompt:IsA("ProximityPrompt") then prompt.HoldDuration = 0; prompt.MaxActivationDistance = 25 end end end
 end)
 ProximityPromptService.PromptButtonHoldBegan:Connect(function(prompt) if State.Instant then pcall(function() fireproximityprompt(prompt) end) end end)
+
 createToggle(page3, "🛡️ Chống bị kick (Anti-AFK)", function(v) State.AntiAfk = v end)
 
--- Script FLY
-createButton(page3, " FLY (script)", Theme.Brand, function()
+createButton(page3, "💻 BẬT ADMIN (Infinite Yield)", Theme.AccentOn, function()
+    pcall(function() loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))() end)
+end)
+
+createButton(page3, "🔨 LẤY BTOOLS (Xóa/Sửa map)", Theme.Brand, function()
+    pcall(function() loadstring(game:HttpGet("https://cdn.wearedevs.net/scripts/BTools.txt"))() end)
+end)
+
+createButton(page3, "🕊️ FLY (Bay mượt)", Theme.Brand, function()
     pcall(function()
         loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\40\39\104\116\116\112\115\58\47\47\103\105\115\116\46\103\105\116\104\117\98\117\115\101\114\99\111\110\116\101\110\116\46\99\111\109\47\109\101\111\122\111\110\101\89\84\47\98\102\48\51\55\100\102\102\57\102\48\97\55\48\48\49\55\51\48\52\100\100\100\54\55\102\100\99\100\51\55\48\47\114\97\119\47\101\49\52\101\55\52\102\52\50\53\98\48\54\48\100\102\53\50\51\51\52\51\99\102\51\48\98\55\56\55\48\55\52\101\98\51\99\53\100\50\47\97\114\99\101\117\115\37\50\53\50\48\120\37\50\53\50\48\102\108\121\37\50\53\50\48\50\37\50\53\50\48\111\98\102\108\117\99\97\116\111\114\39\41\44\116\114\117\101\41\41\40\41\10\10")()
     end)
 end)
 
--- Script SAVE V2
-createButton(page3, " TP SAVE V2 (script)", Theme.Brand, function()
-    pcall(function()
-        loadstring(game:HttpGet(('https://raw.githubusercontent.com/0Ben1/fe/main/Tp%20Place%20GUI'),true))()
-    end)
+createButton(page3, "📂 MENU TP SAVE V2", Theme.Brand, function()
+    pcall(function() loadstring(game:HttpGet(('https://raw.githubusercontent.com/0Ben1/fe/main/Tp%20Place%20GUI'),true))() end)
 end)
 
 -- [TAB 4: VỊ TRÍ]
@@ -354,7 +376,19 @@ end
 createButton(page5, "🔄 LÀM MỚI DANH SÁCH", Theme.Brand, updatePlayerList)
 updatePlayerList()
 
--- [VÒNG LẶP HỆ THỐNG]
+-- ==============================================
+-- [VÒNG LẶP HỆ THỐNG VÀ XỬ LÝ SỰ KIỆN]
+-- ==============================================
+
+-- [Xử lý Anti-AFK thực sự]
+player.Idled:Connect(function()
+    if State.AntiAfk then
+        VirtualUser:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+        task.wait(1)
+        VirtualUser:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+    end
+end)
+
 RunService.RenderStepped:Connect(function()
     local char = player.Character
     if char and char:FindFirstChildOfClass("Humanoid") then
@@ -367,14 +401,27 @@ RunService.RenderStepped:Connect(function()
         
         if root then
             local light = root:FindFirstChild("PlayerPointLight")
-            if State.PlayerLight then if not light then local newLight = Instance.new("PointLight", root); newLight.Name = "PlayerPointLight"; newLight.Brightness = 3; newLight.Range = 60; newLight.Shadows = false end else if light then light:Destroy() end end
+            if State.PlayerLight then 
+                if not light then 
+                    local newLight = Instance.new("PointLight", root); newLight.Name = "PlayerPointLight"; newLight.Brightness = 3; newLight.Range = 60; newLight.Shadows = false 
+                end 
+            else 
+                if light then light:Destroy() end 
+            end
         end
         
+        -- Logic ESP đã được fix để tắt sạch sẽ khi gạt OFF
         if State.ESP then
             for _, p in pairs(Players:GetPlayers()) do
                 if p ~= player and p.Character then
                     local hl = p.Character:FindFirstChild("MobileESP") or Instance.new("Highlight", p.Character)
                     hl.Name = "MobileESP"; hl.Enabled = true; hl.FillTransparency = 0.7; hl.OutlineColor = Theme.Brand; hl.FillColor = Theme.AccentOn
+                end
+            end
+        else
+            for _, p in pairs(Players:GetPlayers()) do
+                if p.Character and p.Character:FindFirstChild("MobileESP") then
+                    p.Character.MobileESP:Destroy()
                 end
             end
         end
