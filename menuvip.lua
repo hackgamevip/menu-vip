@@ -1,5 +1,5 @@
 -- ==========================================
--- MENU VIP PRO V26 (TỐI ƯU SIÊU GIẢM LAG FPS BOOST)
+-- MENU VIP PRO V27 (NÂNG CẤP ESP RADAR ĐỎ + HIỆN TÊN & KHOẢNG CÁCH)
 -- ==========================================
 repeat task.wait() until game:IsLoaded()
 
@@ -35,7 +35,7 @@ local Theme = {
 
 -- [1. GIAO DIỆN CHÍNH]
 local gui = Instance.new("ScreenGui")
-gui.Name = "MobileProMax_V26"
+gui.Name = "MobileProMax_V27"
 gui.ResetOnSpawn = false
 gui.DisplayOrder = 99999
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
@@ -105,7 +105,7 @@ headerCover.BackgroundColor3 = Theme.HeaderBg; headerCover.BackgroundTransparenc
 
 local titleLabel = Instance.new("TextLabel", header)
 titleLabel.Size = UDim2.new(1, 0, 1, 0); titleLabel.BackgroundTransparency = 1
-titleLabel.Text = " MENU VIP V26 "
+titleLabel.Text = " MENU VIP V27 "
 titleLabel.TextColor3 = Color3.new(1, 1, 1); titleLabel.Font = Enum.Font.GothamBlack; titleLabel.TextSize = 16
 local titleGradient = Instance.new("UIGradient", titleLabel)
 titleGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Theme.Brand), ColorSequenceKeypoint.new(1, Theme.BrandGradient)})
@@ -183,25 +183,20 @@ openBtn.MouseButton1Click:Connect(function()
     frame:TweenPosition(opened and UDim2.new(0.5, -170, 0.5, -220) or UDim2.new(0.5, -170, 1.2, 0), "Out", "Back", 0.5)
 end)
 
--- [CÁC HÀM TẠO NÚT VÀ CÔNG TẮC]
+-- [CÁC HÀM TẠO NÚT, CÔNG TẮC, SLIDER]
 local function createButton(parent, text, color, callback)
     local btnFrame = Instance.new("Frame", parent)
     btnFrame.Size = UDim2.new(0.9, 0, 0, 44); btnFrame.BackgroundTransparency = 1
-    
     local btn = Instance.new("TextButton", btnFrame)
     btn.Size = UDim2.new(1, 0, 1, 0); btn.BackgroundColor3 = Theme.ItemBg; btn.Text = ""; btn.AutoButtonColor = false
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
     local stroke = Instance.new("UIStroke", btn); stroke.Color = color; stroke.Thickness = 1.2; stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    
     local title = Instance.new("TextLabel", btn)
     title.Size = UDim2.new(1, 0, 1, 0); title.BackgroundTransparency = 1; title.Text = text
     title.TextColor3 = color; title.Font = Enum.Font.GothamBold; title.TextSize = 13
-    
     btn.MouseButton1Click:Connect(function()
-        clickAnimate(btn)
-        TweenService:Create(stroke, TweenInfo.new(0.15), {Color = Theme.TextTitle}):Play()
-        task.wait(0.15); TweenService:Create(stroke, TweenInfo.new(0.3), {Color = color}):Play()
-        callback()
+        clickAnimate(btn); TweenService:Create(stroke, TweenInfo.new(0.15), {Color = Theme.TextTitle}):Play()
+        task.wait(0.15); TweenService:Create(stroke, TweenInfo.new(0.3), {Color = color}):Play(); callback()
     end)
     return btn
 end
@@ -209,27 +204,21 @@ end
 local function createToggle(parent, text, callback)
     local btnFrame = Instance.new("Frame", parent)
     btnFrame.Size = UDim2.new(0.9, 0, 0, 46); btnFrame.BackgroundTransparency = 1
-    
     local btn = Instance.new("TextButton", btnFrame)
     btn.Size = UDim2.new(1, 0, 1, 0); btn.BackgroundColor3 = Theme.ItemBg; btn.Text = ""; btn.AutoButtonColor = false
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
     local stroke = Instance.new("UIStroke", btn); stroke.Color = Theme.Stroke; stroke.Thickness = 1.2
-    
     local title = Instance.new("TextLabel", btn)
     title.Size = UDim2.new(0.7, 0, 1, 0); title.Position = UDim2.new(0.05, 0, 0, 0)
     title.BackgroundTransparency = 1; title.Text = text
     title.TextColor3 = Theme.TextTitle; title.Font = Enum.Font.GothamSemibold; title.TextSize = 13; title.TextXAlignment = Enum.TextXAlignment.Left
-    
     local status = Instance.new("TextLabel", btn)
     status.Size = UDim2.new(0.2, 0, 1, 0); status.Position = UDim2.new(0.75, 0, 0, 0)
     status.BackgroundTransparency = 1; status.Text = "OFF"
     status.TextColor3 = Theme.AccentOff; status.Font = Enum.Font.GothamBlack; status.TextSize = 12; status.TextXAlignment = Enum.TextXAlignment.Right
-    
     local active = false
     btn.MouseButton1Click:Connect(function()
-        clickAnimate(btn)
-        active = not active
-        status.Text = active and "ON" or "OFF"
+        clickAnimate(btn); active = not active; status.Text = active and "ON" or "OFF"
         TweenService:Create(status, TweenInfo.new(0.2), {TextColor3 = active and Theme.AccentOn or Theme.AccentOff}):Play()
         TweenService:Create(stroke, TweenInfo.new(0.2), {Color = active and Theme.AccentOn or Theme.Stroke}):Play()
         TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = active and Color3.fromRGB(35, 45, 40) or Theme.ItemBg}):Play()
@@ -239,48 +228,25 @@ end
 
 local function createSlider(parent, text, min, max, default, callback)
     local frame = Instance.new("Frame", parent)
-    frame.Size = UDim2.new(0.9, 0, 0, 50)
-    frame.BackgroundTransparency = 1
-
+    frame.Size = UDim2.new(0.9, 0, 0, 50); frame.BackgroundTransparency = 1
     local bg = Instance.new("Frame", frame)
-    bg.Size = UDim2.new(1, 0, 1, 0)
-    bg.BackgroundColor3 = Theme.ItemBg
+    bg.Size = UDim2.new(1, 0, 1, 0); bg.BackgroundColor3 = Theme.ItemBg
     Instance.new("UICorner", bg).CornerRadius = UDim.new(0, 10)
-    local stroke = Instance.new("UIStroke", bg)
-    stroke.Color = Theme.Stroke
-    stroke.Thickness = 1.2
-
+    local stroke = Instance.new("UIStroke", bg); stroke.Color = Theme.Stroke; stroke.Thickness = 1.2
     local titleLabel = Instance.new("TextLabel", bg)
-    titleLabel.Size = UDim2.new(0.7, 0, 0.4, 0)
-    titleLabel.Position = UDim2.new(0.05, 0, 0.1, 0)
-    titleLabel.BackgroundTransparency = 1
-    titleLabel.Text = text
-    titleLabel.TextColor3 = Theme.TextTitle
-    titleLabel.Font = Enum.Font.GothamSemibold
-    titleLabel.TextSize = 12
-    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-
+    titleLabel.Size = UDim2.new(0.7, 0, 0.4, 0); titleLabel.Position = UDim2.new(0.05, 0, 0.1, 0)
+    titleLabel.BackgroundTransparency = 1; titleLabel.Text = text; titleLabel.TextColor3 = Theme.TextTitle
+    titleLabel.Font = Enum.Font.GothamSemibold; titleLabel.TextSize = 12; titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     local valLabel = Instance.new("TextLabel", bg)
-    valLabel.Size = UDim2.new(0.25, 0, 0.4, 0)
-    valLabel.Position = UDim2.new(0.7, 0, 0.1, 0)
-    valLabel.BackgroundTransparency = 1
-    valLabel.Text = tostring(default)
-    valLabel.TextColor3 = Theme.Brand
-    valLabel.Font = Enum.Font.GothamBold
-    valLabel.TextSize = 12
-    valLabel.TextXAlignment = Enum.TextXAlignment.Right
-
+    valLabel.Size = UDim2.new(0.25, 0, 0.4, 0); valLabel.Position = UDim2.new(0.7, 0, 0.1, 0)
+    valLabel.BackgroundTransparency = 1; valLabel.Text = tostring(default); valLabel.TextColor3 = Theme.Brand
+    valLabel.Font = Enum.Font.GothamBold; valLabel.TextSize = 12; valLabel.TextXAlignment = Enum.TextXAlignment.Right
     local track = Instance.new("Frame", bg)
-    track.Size = UDim2.new(0.9, 0, 0.15, 0)
-    track.Position = UDim2.new(0.05, 0, 0.65, 0)
-    track.BackgroundColor3 = Theme.MainBg
+    track.Size = UDim2.new(0.9, 0, 0.15, 0); track.Position = UDim2.new(0.05, 0, 0.65, 0); track.BackgroundColor3 = Theme.MainBg
     Instance.new("UICorner", track).CornerRadius = UDim.new(1, 0)
-
     local fill = Instance.new("Frame", track)
-    fill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
-    fill.BackgroundColor3 = Theme.AccentOn
+    fill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0); fill.BackgroundColor3 = Theme.AccentOn
     Instance.new("UICorner", fill).CornerRadius = UDim.new(1, 0)
-
     local dragging = false
     local function updateSlider(input)
         local pos = math.clamp((input.Position.X - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
@@ -289,33 +255,19 @@ local function createSlider(parent, text, min, max, default, callback)
         TweenService:Create(fill, TweenInfo.new(0.1), {Size = UDim2.new(pos, 0, 1, 0)}):Play()
         callback(value)
     end
-
-    track.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true; updateSlider(input) end
-    end)
-    UIS.InputChanged:Connect(function(input)
-        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then updateSlider(input) end
-    end)
-    UIS.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end
-    end)
-
+    track.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true; updateSlider(input) end end)
+    UIS.InputChanged:Connect(function(input) if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then updateSlider(input) end end)
+    UIS.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end end)
     callback(default)
     return bg
 end
 
--- Tối ưu hóa cực mạnh từng Part
 local function optimizePart(obj)
     if State.LowGfx then
         if obj:IsA("BasePart") or obj:IsA("MeshPart") then 
-            obj.Material = Enum.Material.SmoothPlastic  -- Làm mịn hoàn toàn
-            obj.Reflectance = 0
-            obj.CastShadow = false -- Xóa bóng đổ của vật thể
-        elseif obj:IsA("Decal") or obj:IsA("Texture") then 
-            obj.Transparency = 1 -- Làm trong suốt texture
-        elseif obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Smoke") or obj:IsA("Fire") or obj:IsA("Sparkles") then 
-            obj.Enabled = false -- Tắt sạch hiệu ứng khói lửa
-        end
+            obj.Material = Enum.Material.SmoothPlastic; obj.Reflectance = 0; obj.CastShadow = false 
+        elseif obj:IsA("Decal") or obj:IsA("Texture") then obj.Transparency = 1 
+        elseif obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Smoke") or obj:IsA("Fire") or obj:IsA("Sparkles") then obj.Enabled = false end
     end
 end
 
@@ -326,10 +278,8 @@ end
 -- [TAB 1: NHÂN VẬT]
 createToggle(page1, "🏃 Chạy nhanh", function(v) State.Speed = v end)
 createSlider(page1, "Chỉnh tốc độ chạy", 16, 250, 60, function(val) State.SpeedValue = val end)
-
 createToggle(page1, "🦘 Nhảy siêu cao", function(v) State.Jump = v end)
 createSlider(page1, "Chỉnh lực nhảy", 50, 300, 120, function(val) State.JumpValue = val end)
-
 createToggle(page1, "🚀 Nhảy trên không", function(v) State.InfJump = v end) 
 
 UIS.JumpRequest:Connect(function() 
@@ -341,38 +291,18 @@ end)
 
 -- [TAB 2: BẢN ĐỒ]
 createToggle(page2, "👻 Đi xuyên tường", function(v) State.Noclip = v end)
-
-createToggle(page2, "🕹️ FPS Boost (Tối ưu cực mạnh)", function(v) 
+createToggle(page2, "🕹️ FPS Boost (Giảm Lag MAX)", function(v) 
     State.LowGfx = v 
     if v then 
-        Lighting.GlobalShadows = false
-        Lighting.FogEnd = 9e9 -- Xóa sương mù
-        pcall(function() settings().Rendering.QualityLevel = 1 end)
-        
-        -- Tối ưu hóa Nước
-        pcall(function()
-            workspace.Terrain.WaterWaveSize = 0
-            workspace.Terrain.WaterWaveSpeed = 0
-            workspace.Terrain.WaterReflectance = 0
-            workspace.Terrain.WaterTransparency = 0
-            workspace.Terrain.Decoration = false
-        end)
-
-        -- Tắt hiệu ứng làm mờ, chói sáng
-        for _, obj in pairs(Lighting:GetChildren()) do
-            if obj:IsA("PostEffect") or obj:IsA("BlurEffect") or obj:IsA("SunRaysEffect") or obj:IsA("ColorCorrectionEffect") or obj:IsA("BloomEffect") or obj:IsA("DepthOfFieldEffect") then
-                obj.Enabled = false
-            end
-        end
-
+        Lighting.GlobalShadows = false; Lighting.FogEnd = 9e9; pcall(function() settings().Rendering.QualityLevel = 1 end)
+        pcall(function() workspace.Terrain.WaterWaveSize = 0; workspace.Terrain.WaterWaveSpeed = 0; workspace.Terrain.WaterReflectance = 0; workspace.Terrain.WaterTransparency = 0; workspace.Terrain.Decoration = false end)
+        for _, obj in pairs(Lighting:GetChildren()) do if obj:IsA("PostEffect") or obj:IsA("BlurEffect") or obj:IsA("SunRaysEffect") or obj:IsA("ColorCorrectionEffect") or obj:IsA("BloomEffect") or obj:IsA("DepthOfFieldEffect") then obj.Enabled = false end end
         for _, obj in pairs(workspace:GetDescendants()) do optimizePart(obj) end
     else 
-        Lighting.GlobalShadows = true
-        pcall(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic end) 
+        Lighting.GlobalShadows = true; pcall(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic end) 
     end
 end)
-
-createToggle(page2, "👀 Định vị người chơi (ESP)", function(v) State.ESP = v end)
+createToggle(page2, "🔴 ESP RADAR ĐỎ (Tên + K.Cách)", function(v) State.ESP = v end)
 createToggle(page2, "💡 Ánh sáng quanh người", function(v) 
     State.PlayerLight = v 
     if not v and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then local light = player.Character.HumanoidRootPart:FindFirstChild("PlayerPointLight"); if light then light:Destroy() end end
@@ -386,26 +316,11 @@ createToggle(page3, "🐿️ Lấy đồ nhanh", function(v)
     if v then for _, prompt in pairs(workspace:GetDescendants()) do if prompt:IsA("ProximityPrompt") then prompt.HoldDuration = 0; prompt.MaxActivationDistance = 25 end end end
 end)
 ProximityPromptService.PromptButtonHoldBegan:Connect(function(prompt) if State.Instant then pcall(function() fireproximityprompt(prompt) end) end end)
-
 createToggle(page3, "🛡️ Chống bị kick (Anti-AFK)", function(v) State.AntiAfk = v end)
-
-createButton(page3, "💻 BẬT ADMIN (Infinite Yield)", Theme.AccentOn, function()
-    pcall(function() loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))() end)
-end)
-
-createButton(page3, "🔨 LẤY BTOOLS", Theme.Brand, function()
-    pcall(function() loadstring(game:HttpGet("https://cdn.wearedevs.net/scripts/BTools.txt"))() end)
-end)
-
-createButton(page3, "🕊️ FLY (Bay)", Theme.Brand, function()
-    pcall(function()
-        loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\40\39\104\116\116\112\115\58\47\47\103\105\115\116\46\103\105\116\104\117\98\117\115\101\114\99\111\110\116\101\110\116\46\99\111\109\47\109\101\111\122\111\110\101\89\84\47\98\102\48\51\55\100\102\102\57\102\48\97\55\48\48\49\55\51\48\52\100\100\100\54\55\102\100\99\100\51\55\48\47\114\97\119\47\101\49\52\101\55\52\102\52\50\53\98\48\54\48\100\102\53\50\51\51\52\51\99\102\51\48\98\55\56\55\48\55\52\101\98\51\99\53\100\50\47\97\114\99\101\117\115\37\50\53\50\48\120\37\50\53\50\48\102\108\121\37\50\53\50\48\50\37\50\53\50\48\111\98\102\108\117\99\97\116\111\114\39\41\44\116\114\117\101\41\41\40\41\10\10")()
-    end)
-end)
-
-createButton(page3, "📂 MENU TP SAVE V2", Theme.Brand, function()
-    pcall(function() loadstring(game:HttpGet(('https://raw.githubusercontent.com/0Ben1/fe/main/Tp%20Place%20GUI'),true))() end)
-end)
+createButton(page3, "💻 BẬT ADMIN (Infinite Yield)", Theme.AccentOn, function() pcall(function() loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))() end) end)
+createButton(page3, "🔨 LẤY BTOOLS", Theme.Brand, function() pcall(function() loadstring(game:HttpGet("https://cdn.wearedevs.net/scripts/BTools.txt"))() end) end)
+createButton(page3, "🕊️ FLY (Bay)", Theme.Brand, function() pcall(function() loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\40\39\104\116\116\112\115\58\47\47\103\105\115\116\46\103\105\116\104\117\98\117\115\101\114\99\111\110\116\101\110\116\46\99\111\109\47\109\101\111\122\111\110\101\89\84\47\98\102\48\51\55\100\102\102\57\102\48\97\55\48\48\49\55\51\48\52\100\100\100\54\55\102\100\99\100\51\55\48\47\114\97\119\47\101\49\52\101\55\52\102\52\50\53\98\48\54\48\100\102\53\50\51\51\52\51\99\102\51\48\98\55\56\55\48\55\52\101\98\51\99\53\100\50\47\97\114\99\101\117\115\37\50\53\50\48\120\37\50\53\50\48\102\108\121\37\50\53\50\48\50\37\50\53\50\48\111\98\102\108\117\99\97\116\111\114\39\41\44\116\114\117\101\41\41\40\41\10\10")() end) end)
+createButton(page3, "📂 MENU TP SAVE V2", Theme.Brand, function() pcall(function() loadstring(game:HttpGet(('https://raw.githubusercontent.com/0Ben1/fe/main/Tp%20Place%20GUI'),true))() end) end)
 
 -- [TAB 4: VỊ TRÍ]
 local savedLocCount = 0
@@ -414,17 +329,14 @@ local function createPosItem(name, cframe)
     item.Size = UDim2.new(0.9, 0, 0, 50); item.BackgroundColor3 = Theme.ItemBg
     Instance.new("UICorner", item).CornerRadius = UDim.new(0, 10)
     local stroke = Instance.new("UIStroke", item); stroke.Color = Theme.Stroke; stroke.Thickness = 1
-    
     local nameBox = Instance.new("TextBox", item)
     nameBox.Size = UDim2.new(0.45, 0, 1, 0); nameBox.Position = UDim2.new(0.05, 0, 0, 0)
     nameBox.Text = name; nameBox.TextColor3 = Theme.TextTitle; nameBox.Font = Enum.Font.GothamSemibold; nameBox.TextSize = 12
     nameBox.BackgroundTransparency = 1; nameBox.TextXAlignment = Enum.TextXAlignment.Left; nameBox.ClearTextOnFocus = false
-    
     local tpBtn = Instance.new("TextButton", item)
     tpBtn.Size = UDim2.new(0.25, 0, 0.6, 0); tpBtn.Position = UDim2.new(0.53, 0, 0.2, 0)
     tpBtn.Text = "TP"; tpBtn.BackgroundColor3 = Theme.Brand; tpBtn.TextColor3 = Color3.new(1,1,1)
     tpBtn.Font = Enum.Font.GothamBold; tpBtn.TextSize = 11; Instance.new("UICorner", tpBtn).CornerRadius = UDim.new(0, 6)
-    
     local delBtn = Instance.new("TextButton", item)
     delBtn.Size = UDim2.new(0.15, 0, 0.6, 0); delBtn.Position = UDim2.new(0.81, 0, 0.2, 0)
     delBtn.Text = "x"; delBtn.BackgroundColor3 = Theme.AccentOff; delBtn.TextColor3 = Color3.new(1,1,1)
@@ -433,7 +345,6 @@ local function createPosItem(name, cframe)
     tpBtn.MouseButton1Click:Connect(function() clickAnimate(tpBtn); if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then player.Character.HumanoidRootPart.CFrame = cframe end end)
     delBtn.MouseButton1Click:Connect(function() clickAnimate(delBtn); task.wait(0.1); item:Destroy() end)
 end
-
 createButton(page4, "🎯 LƯU TỌA ĐỘ ĐANG ĐỨNG", Theme.AccentOn, function()
     if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
         savedLocCount = savedLocCount + 1
@@ -444,7 +355,6 @@ end)
 -- [TAB 5: DANH SÁCH NGƯỜI CHƠI]
 local function updatePlayerList()
     for _, child in pairs(page5:GetChildren()) do if child.Name == "PlayerBtn_TP" or child.Name == "PaddingFrame" then child:Destroy() end end
-    
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= player then
             local pFrame = Instance.new("Frame", page5); pFrame.Name = "PaddingFrame"; pFrame.Size = UDim2.new(0.9, 0, 0, 44); pFrame.BackgroundTransparency = 1
@@ -454,7 +364,6 @@ local function updatePlayerList()
             btn.TextColor3 = Theme.TextTitle; btn.Font = Enum.Font.GothamSemibold; btn.TextSize = 13; btn.TextXAlignment = Enum.TextXAlignment.Left
             Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
             local stroke = Instance.new("UIStroke", btn); stroke.Color = Theme.Stroke; stroke.Thickness = 1
-            
             local arrow = Instance.new("TextLabel", btn)
             arrow.Size = UDim2.new(0.2, 0, 1, 0); arrow.Position = UDim2.new(0.75, 0, 0, 0); arrow.BackgroundTransparency = 1
             arrow.Text = " TP "; arrow.TextColor3 = Theme.Brand; arrow.Font = Enum.Font.GothamBold; arrow.TextSize = 11; arrow.TextXAlignment = Enum.TextXAlignment.Right
@@ -498,25 +407,53 @@ RunService.RenderStepped:Connect(function()
         if root then
             local light = root:FindFirstChild("PlayerPointLight")
             if State.PlayerLight then 
-                if not light then 
-                    local newLight = Instance.new("PointLight", root); newLight.Name = "PlayerPointLight"; newLight.Brightness = 3; newLight.Range = 60; newLight.Shadows = false 
-                end 
+                if not light then local newLight = Instance.new("PointLight", root); newLight.Name = "PlayerPointLight"; newLight.Brightness = 3; newLight.Range = 60; newLight.Shadows = false end 
             else 
                 if light then light:Destroy() end 
             end
         end
         
+        -- HỆ THỐNG ESP RADAR (Tên + K/Cách + Xuyên tường tuyệt đối)
         if State.ESP then
             for _, p in pairs(Players:GetPlayers()) do
-                if p ~= player and p.Character then
-                    local hl = p.Character:FindFirstChild("MobileESP") or Instance.new("Highlight", p.Character)
-                    hl.Name = "MobileESP"; hl.Enabled = true; hl.FillTransparency = 0.7; hl.OutlineColor = Theme.Brand; hl.FillColor = Theme.AccentOn
+                if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") and p.Character:FindFirstChild("Head") then
+                    
+                    -- 1. Viền đỏ xuyên tường xa nhất (Highlight)
+                    local hl = p.Character:FindFirstChild("MobileESP_HL") or Instance.new("Highlight", p.Character)
+                    hl.Name = "MobileESP_HL"; hl.Enabled = true
+                    hl.FillTransparency = 0.5; hl.OutlineTransparency = 0
+                    hl.OutlineColor = Color3.fromRGB(255, 0, 0) -- Màu đỏ viền
+                    hl.FillColor = Color3.fromRGB(255, 0, 0) -- Màu đỏ trong
+                    hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop -- Bắt buộc nhìn xuyên mọi vật thể xa nhất
+                    
+                    -- 2. Tên & Khoảng cách trên đầu (BillboardGui)
+                    local bgui = p.Character:FindFirstChild("MobileESP_Name") or Instance.new("BillboardGui", p.Character)
+                    bgui.Name = "MobileESP_Name"
+                    bgui.Size = UDim2.new(0, 200, 0, 50)
+                    bgui.StudsOffset = Vector3.new(0, 2.5, 0) -- Vị trí nổi trên đầu
+                    bgui.AlwaysOnTop = true -- Nổi xuyên tường
+                    
+                    local tLabel = bgui:FindFirstChild("TextLabel") or Instance.new("TextLabel", bgui)
+                    tLabel.Size = UDim2.new(1, 0, 1, 0); tLabel.BackgroundTransparency = 1
+                    tLabel.TextColor3 = Color3.fromRGB(255, 50, 50) -- Chữ màu Đỏ rực
+                    tLabel.TextStrokeTransparency = 0 -- Viền đen chống lóa
+                    tLabel.Font = Enum.Font.GothamBold; tLabel.TextSize = 11
+                    
+                    -- Tính toán khoảng cách (m)
+                    if root then
+                        local dist = math.floor((root.Position - p.Character.HumanoidRootPart.Position).Magnitude)
+                        tLabel.Text = "☠️ " .. p.DisplayName .. "\n[" .. dist .. "m]"
+                    else
+                        tLabel.Text = "☠️ " .. p.DisplayName
+                    end
                 end
             end
         else
+            -- Dọn dẹp sạch sẽ khi tắt ESP
             for _, p in pairs(Players:GetPlayers()) do
-                if p.Character and p.Character:FindFirstChild("MobileESP") then
-                    p.Character.MobileESP:Destroy()
+                if p.Character then
+                    if p.Character:FindFirstChild("MobileESP_HL") then p.Character.MobileESP_HL:Destroy() end
+                    if p.Character:FindFirstChild("MobileESP_Name") then p.Character.MobileESP_Name:Destroy() end
                 end
             end
         end
