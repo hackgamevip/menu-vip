@@ -1,5 +1,5 @@
 -- ==========================================
--- MENU VIP PRO V28 (FIX LỖI ESP, XÓA KHUNG & ICON)
+-- MENU VIP PRO V29 (THÊM CHỐNG CHOÁNG/NGÃ)
 -- ==========================================
 repeat task.wait() until game:IsLoaded()
 
@@ -14,7 +14,7 @@ local player = Players.LocalPlayer
 
 local State = {
     Instant = false, Noclip = false, LowGfx = false, Speed = false, Jump = false,
-    InfJump = false, PlayerLight = false, ESP = false, AntiAfk = false,
+    InfJump = false, PlayerLight = false, ESP = false, AntiAfk = false, AntiStun = false, -- Thêm AntiStun vào State
     SpeedValue = 60, JumpValue = 120
 }
 
@@ -35,7 +35,7 @@ local Theme = {
 
 -- [1. GIAO DIỆN CHÍNH]
 local gui = Instance.new("ScreenGui")
-gui.Name = "MobileProMax_V28"
+gui.Name = "MobileProMax_V29"
 gui.ResetOnSpawn = false
 gui.DisplayOrder = 99999
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
@@ -105,7 +105,7 @@ headerCover.BackgroundColor3 = Theme.HeaderBg; headerCover.BackgroundTransparenc
 
 local titleLabel = Instance.new("TextLabel", header)
 titleLabel.Size = UDim2.new(1, 0, 1, 0); titleLabel.BackgroundTransparency = 1
-titleLabel.Text = " MENU VIP V28 "
+titleLabel.Text = " MENU VIP V29 "
 titleLabel.TextColor3 = Color3.new(1, 1, 1); titleLabel.Font = Enum.Font.GothamBlack; titleLabel.TextSize = 16
 local titleGradient = Instance.new("UIGradient", titleLabel)
 titleGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Theme.Brand), ColorSequenceKeypoint.new(1, Theme.BrandGradient)})
@@ -276,6 +276,7 @@ end
 -- ==============================================
 
 -- [TAB 1: NHÂN VẬT]
+createToggle(page1, "🛡️ Chống ngã/Choáng", function(v) State.AntiStun = v end)
 createToggle(page1, "🏃 Chạy nhanh", function(v) State.Speed = v end)
 createSlider(page1, "Chỉnh tốc độ chạy", 16, 250, 60, function(val) State.SpeedValue = val end)
 createToggle(page1, "🦘 Nhảy siêu cao", function(v) State.Jump = v end)
@@ -404,6 +405,16 @@ RunService.RenderStepped:Connect(function()
         if State.Jump then hum.JumpPower = State.JumpValue else hum.JumpPower = 50 end
         if State.Noclip then for _, v in pairs(char:GetDescendants()) do if v:IsA("BasePart") then v.CanCollide = false end end end
         
+        -- Logic Chống Choáng / Ngã
+        if State.AntiStun then
+            hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+            hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+            hum.PlatformStand = false
+        else
+            hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
+            hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, true)
+        end
+
         if root then
             local light = root:FindFirstChild("PlayerPointLight")
             if State.PlayerLight then 
@@ -419,7 +430,7 @@ RunService.RenderStepped:Connect(function()
                 if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") and p.Character:FindFirstChild("Head") then
                     local head = p.Character.Head
                     
-                    -- Tạo hoặc lấy BillboardGui đang gắn trên Head
+                    -- Lấy hoặc tạo BillboardGui trên Đầu
                     local bgui = head:FindFirstChild("MobileESP_Name")
                     if not bgui then
                         bgui = Instance.new("BillboardGui", head)
@@ -434,13 +445,13 @@ RunService.RenderStepped:Connect(function()
                         tLabel.Size = UDim2.new(1, 0, 1, 0)
                         tLabel.BackgroundTransparency = 1
                         tLabel.TextColor3 = Color3.fromRGB(255, 50, 50) -- Màu đỏ tươi
-                        tLabel.TextStrokeTransparency = 0 -- Viền đen bên ngoài chữ
+                        tLabel.TextStrokeTransparency = 0 -- Viền đen để dễ nhìn
                         tLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
                         tLabel.Font = Enum.Font.GothamBold
                         tLabel.TextSize = 12
                     end
                     
-                    -- Cập nhật Text
+                    -- Cập nhật Text liên tục
                     if root then
                         local dist = math.floor((root.Position - p.Character.HumanoidRootPart.Position).Magnitude)
                         bgui.NameLabel.Text = p.DisplayName .. "\n[" .. dist .. "m]"
@@ -450,13 +461,12 @@ RunService.RenderStepped:Connect(function()
                 end
             end
         else
-            -- Xóa ESP khi tắt
+            -- Xóa sạch sẽ ESP khi tắt
             for _, p in pairs(Players:GetPlayers()) do
                 if p.Character and p.Character:FindFirstChild("Head") then
                     local bgui = p.Character.Head:FindFirstChild("MobileESP_Name")
                     if bgui then bgui:Destroy() end
                 end
-                -- Đề phòng còn Highlight từ bản cũ
                 if p.Character and p.Character:FindFirstChild("MobileESP_HL") then 
                     p.Character.MobileESP_HL:Destroy() 
                 end
