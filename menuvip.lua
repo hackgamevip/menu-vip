@@ -1,5 +1,5 @@
 -- ==========================================
--- MENU VIP PRO V24 (CẬP NHẬT TÍNH NĂNG & FIX LỖI)
+-- MENU VIP PRO V25 (THÊM SLIDER CHỈNH TỐC ĐỘ)
 -- ==========================================
 repeat task.wait() until game:IsLoaded()
 
@@ -9,7 +9,7 @@ local RunService = game:GetService("RunService")
 local Lighting = game:GetService("Lighting")
 local UIS = game:GetService("UserInputService")
 local ProximityPromptService = game:GetService("ProximityPromptService")
-local VirtualUser = game:GetService("VirtualUser") -- Thêm thư viện để làm Anti-AFK
+local VirtualUser = game:GetService("VirtualUser")
 local player = Players.LocalPlayer
 
 local State = {
@@ -18,7 +18,7 @@ local State = {
     SpeedValue = 60, JumpValue = 120
 }
 
--- [BẢNG MÀU CHỦ ĐẠO - PHONG CÁCH NEON TỐI]
+-- [BẢNG MÀU CHỦ ĐẠO]
 local Theme = {
     MainBg = Color3.fromRGB(15, 15, 20),      
     HeaderBg = Color3.fromRGB(22, 22, 28),
@@ -35,7 +35,7 @@ local Theme = {
 
 -- [1. GIAO DIỆN CHÍNH]
 local gui = Instance.new("ScreenGui")
-gui.Name = "MobileProMax_V24"
+gui.Name = "MobileProMax_V25"
 gui.ResetOnSpawn = false
 gui.DisplayOrder = 99999
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
@@ -105,7 +105,7 @@ headerCover.BackgroundColor3 = Theme.HeaderBg; headerCover.BackgroundTransparenc
 
 local titleLabel = Instance.new("TextLabel", header)
 titleLabel.Size = UDim2.new(1, 0, 1, 0); titleLabel.BackgroundTransparency = 1
-titleLabel.Text = " MENU VIP V24 "
+titleLabel.Text = " MENU VIP V25 "
 titleLabel.TextColor3 = Color3.new(1, 1, 1); titleLabel.Font = Enum.Font.GothamBlack; titleLabel.TextSize = 16
 local titleGradient = Instance.new("UIGradient", titleLabel)
 titleGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Theme.Brand), ColorSequenceKeypoint.new(1, Theme.BrandGradient)})
@@ -183,7 +183,7 @@ openBtn.MouseButton1Click:Connect(function()
     frame:TweenPosition(opened and UDim2.new(0.5, -170, 0.5, -220) or UDim2.new(0.5, -170, 1.2, 0), "Out", "Back", 0.5)
 end)
 
--- [HÀM TẠO NÚT BẤM]
+-- [CÁC HÀM TẠO NÚT VÀ CÔNG TẮC]
 local function createButton(parent, text, color, callback)
     local btnFrame = Instance.new("Frame", parent)
     btnFrame.Size = UDim2.new(0.9, 0, 0, 44); btnFrame.BackgroundTransparency = 1
@@ -206,7 +206,6 @@ local function createButton(parent, text, color, callback)
     return btn
 end
 
--- [HÀM TẠO CÔNG TẮC]
 local function createToggle(parent, text, callback)
     local btnFrame = Instance.new("Frame", parent)
     btnFrame.Size = UDim2.new(0.9, 0, 0, 46); btnFrame.BackgroundTransparency = 1
@@ -238,6 +237,83 @@ local function createToggle(parent, text, callback)
     end)
 end
 
+-- [HÀM TẠO THANH TRƯỢT (SLIDER) MỚI]
+local function createSlider(parent, text, min, max, default, callback)
+    local frame = Instance.new("Frame", parent)
+    frame.Size = UDim2.new(0.9, 0, 0, 50)
+    frame.BackgroundTransparency = 1
+
+    local bg = Instance.new("Frame", frame)
+    bg.Size = UDim2.new(1, 0, 1, 0)
+    bg.BackgroundColor3 = Theme.ItemBg
+    Instance.new("UICorner", bg).CornerRadius = UDim.new(0, 10)
+    local stroke = Instance.new("UIStroke", bg)
+    stroke.Color = Theme.Stroke
+    stroke.Thickness = 1.2
+
+    local titleLabel = Instance.new("TextLabel", bg)
+    titleLabel.Size = UDim2.new(0.7, 0, 0.4, 0)
+    titleLabel.Position = UDim2.new(0.05, 0, 0.1, 0)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Text = text
+    titleLabel.TextColor3 = Theme.TextTitle
+    titleLabel.Font = Enum.Font.GothamSemibold
+    titleLabel.TextSize = 12
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+    local valLabel = Instance.new("TextLabel", bg)
+    valLabel.Size = UDim2.new(0.25, 0, 0.4, 0)
+    valLabel.Position = UDim2.new(0.7, 0, 0.1, 0)
+    valLabel.BackgroundTransparency = 1
+    valLabel.Text = tostring(default)
+    valLabel.TextColor3 = Theme.Brand
+    valLabel.Font = Enum.Font.GothamBold
+    valLabel.TextSize = 12
+    valLabel.TextXAlignment = Enum.TextXAlignment.Right
+
+    local track = Instance.new("Frame", bg)
+    track.Size = UDim2.new(0.9, 0, 0.15, 0)
+    track.Position = UDim2.new(0.05, 0, 0.65, 0)
+    track.BackgroundColor3 = Theme.MainBg
+    Instance.new("UICorner", track).CornerRadius = UDim.new(1, 0)
+
+    local fill = Instance.new("Frame", track)
+    fill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
+    fill.BackgroundColor3 = Theme.AccentOn
+    Instance.new("UICorner", fill).CornerRadius = UDim.new(1, 0)
+
+    local dragging = false
+    local function updateSlider(input)
+        local pos = math.clamp((input.Position.X - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
+        local value = math.floor(min + ((max - min) * pos))
+        valLabel.Text = tostring(value)
+        TweenService:Create(fill, TweenInfo.new(0.1), {Size = UDim2.new(pos, 0, 1, 0)}):Play()
+        callback(value)
+    end
+
+    track.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            updateSlider(input)
+        end
+    end)
+    
+    UIS.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            updateSlider(input)
+        end
+    end)
+
+    UIS.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+        end
+    end)
+
+    callback(default)
+    return bg
+end
+
 local function optimizePart(obj)
     if State.LowGfx then
         if obj:IsA("BasePart") or obj:IsA("MeshPart") then obj.Material = Enum.Material.Plastic; obj.Reflectance = 0
@@ -252,11 +328,12 @@ end
 
 -- [TAB 1: NHÂN VẬT]
 createToggle(page1, "🏃 Chạy nhanh", function(v) State.Speed = v end)
+createSlider(page1, "Chỉnh tốc độ chạy", 16, 250, 60, function(val) State.SpeedValue = val end)
+
 createToggle(page1, "🦘 Nhảy siêu cao", function(v) State.Jump = v end)
+createSlider(page1, "Chỉnh lực nhảy", 50, 300, 120, function(val) State.JumpValue = val end)
+
 createToggle(page1, "🚀 Nhảy trên không", function(v) State.InfJump = v end) 
-createToggle(page1, "🎈 Trọng lực yếu (Bay lơ lửng)", function(v) 
-    if v then workspace.Gravity = 50 else workspace.Gravity = 196.2 end 
-end)
 
 UIS.JumpRequest:Connect(function() 
     if State.InfJump and player.Character then 
@@ -267,9 +344,6 @@ end)
 
 -- [TAB 2: BẢN ĐỒ]
 createToggle(page2, "👻 Đi xuyên tường", function(v) State.Noclip = v end)
-createToggle(page2, "🔭 Góc nhìn siêu rộng (FOV)", function(v) 
-    if v then workspace.CurrentCamera.FieldOfView = 120 else workspace.CurrentCamera.FieldOfView = 70 end 
-end)
 createToggle(page2, "🕹️ Giảm Lag (Low GFX)", function(v) 
     State.LowGfx = v 
     if v then Lighting.GlobalShadows = false; pcall(function() settings().Rendering.QualityLevel = 1 end); for _, obj in pairs(workspace:GetDescendants()) do optimizePart(obj) end
@@ -284,7 +358,7 @@ createButton(page2, "🌞 Chỉnh Trời Sáng", Color3.fromRGB(243, 156, 18), f
 createButton(page2, "🌚 Chỉnh Trời Tối", Color3.fromRGB(160, 32, 240), function() Lighting.ClockTime = 0 end)
 
 -- [TAB 3: TIỆN ÍCH]
-createToggle(page3, "🐿️ Lấy đồ nhanh (Bỏ qua thời gian)", function(v) 
+createToggle(page3, "🐿️ Lấy đồ nhanh", function(v) 
     State.Instant = v 
     if v then for _, prompt in pairs(workspace:GetDescendants()) do if prompt:IsA("ProximityPrompt") then prompt.HoldDuration = 0; prompt.MaxActivationDistance = 25 end end end
 end)
@@ -296,11 +370,11 @@ createButton(page3, "💻 BẬT ADMIN (Infinite Yield)", Theme.AccentOn, functio
     pcall(function() loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))() end)
 end)
 
-createButton(page3, "🔨 LẤY BTOOLS (Xóa/Sửa map)", Theme.Brand, function()
+createButton(page3, "🔨 LẤY BTOOLS", Theme.Brand, function()
     pcall(function() loadstring(game:HttpGet("https://cdn.wearedevs.net/scripts/BTools.txt"))() end)
 end)
 
-createButton(page3, "🕊️ FLY (Bay mượt)", Theme.Brand, function()
+createButton(page3, "🕊️ FLY (Bay)", Theme.Brand, function()
     pcall(function()
         loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\40\39\104\116\116\112\115\58\47\47\103\105\115\116\46\103\105\116\104\117\98\117\115\101\114\99\111\110\116\101\110\116\46\99\111\109\47\109\101\111\122\111\110\101\89\84\47\98\102\48\51\55\100\102\102\57\102\48\97\55\48\48\49\55\51\48\52\100\100\100\54\55\102\100\99\100\51\55\48\47\114\97\119\47\101\49\52\101\55\52\102\52\50\53\98\48\54\48\100\102\53\50\51\51\52\51\99\102\51\48\98\55\56\55\48\55\52\101\98\51\99\53\100\50\47\97\114\99\101\117\115\37\50\53\50\48\120\37\50\53\50\48\102\108\121\37\50\53\50\48\50\37\50\53\50\48\111\98\102\108\117\99\97\116\111\114\39\41\44\116\114\117\101\41\41\40\41\10\10")()
     end)
@@ -380,7 +454,6 @@ updatePlayerList()
 -- [VÒNG LẶP HỆ THỐNG VÀ XỬ LÝ SỰ KIỆN]
 -- ==============================================
 
--- [Xử lý Anti-AFK thực sự]
 player.Idled:Connect(function()
     if State.AntiAfk then
         VirtualUser:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
@@ -410,7 +483,6 @@ RunService.RenderStepped:Connect(function()
             end
         end
         
-        -- Logic ESP đã được fix để tắt sạch sẽ khi gạt OFF
         if State.ESP then
             for _, p in pairs(Players:GetPlayers()) do
                 if p ~= player and p.Character then
