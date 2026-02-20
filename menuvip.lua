@@ -55,7 +55,7 @@ gui.Parent = guiParent
 local openBtn = Instance.new("TextButton", gui)
 openBtn.Size = UDim2.new(0, 100, 0, 42)
 openBtn.Position = UDim2.new(0, 15, 0, 15)
-openBtn.Text = "🛑 Mở"
+openBtn.Text = "Mở MENU"
 openBtn.BackgroundColor3 = Theme.MainBg
 openBtn.BackgroundTransparency = 0.1
 openBtn.TextColor3 = Theme.TextTitle
@@ -105,7 +105,7 @@ headerCover.BackgroundColor3 = Theme.HeaderBg; headerCover.BackgroundTransparenc
 
 local titleLabel = Instance.new("TextLabel", header)
 titleLabel.Size = UDim2.new(1, 0, 1, 0); titleLabel.BackgroundTransparency = 1
-titleLabel.Text = " MENU VIP V29 "
+titleLabel.Text = " MENU VIP PRO "
 titleLabel.TextColor3 = Color3.new(1, 1, 1); titleLabel.Font = Enum.Font.GothamBlack; titleLabel.TextSize = 16
 local titleGradient = Instance.new("UIGradient", titleLabel)
 titleGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Theme.Brand), ColorSequenceKeypoint.new(1, Theme.BrandGradient)})
@@ -178,7 +178,7 @@ local opened = false
 openBtn.MouseButton1Click:Connect(function()
     clickAnimate(openBtn)
     opened = not opened
-    openBtn.Text = opened and "❌ ĐÓNG" or "🛑 Mở"
+    openBtn.Text = opened and "ĐÓNG MENU" or "Mở MENU"
     TweenService:Create(openStroke, TweenInfo.new(0.3), {Color = opened and Theme.AccentOff or Theme.Brand}):Play()
     frame:TweenPosition(opened and UDim2.new(0.5, -170, 0.5, -220) or UDim2.new(0.5, -170, 1.2, 0), "Out", "Back", 0.5)
 end)
@@ -276,7 +276,7 @@ end
 -- ==============================================
 
 -- [TAB 1: NHÂN VẬT]
-createToggle(page1, "🛡️ Chống ngã/Choáng", function(v) State.AntiStun = v end)
+createToggle(page1, "🛡️ Chống ngã", function(v) State.AntiStun = v end)
 createToggle(page1, "🏃 Chạy nhanh", function(v) State.Speed = v end)
 createSlider(page1, "Chỉnh tốc độ chạy", 16, 250, 60, function(val) State.SpeedValue = val end)
 createToggle(page1, "🦘 Nhảy siêu cao", function(v) State.Jump = v end)
@@ -292,7 +292,7 @@ end)
 
 -- [TAB 2: BẢN ĐỒ]
 createToggle(page2, "👻 Đi xuyên tường", function(v) State.Noclip = v end)
-createToggle(page2, "🕹️ FPS Boost (Giảm Lag MAX)", function(v) 
+createToggle(page2, "🕹️ FPS Boost (Giảm Lag)", function(v) 
     State.LowGfx = v 
     if v then 
         Lighting.GlobalShadows = false; Lighting.FogEnd = 9e9; pcall(function() settings().Rendering.QualityLevel = 1 end)
@@ -303,7 +303,7 @@ createToggle(page2, "🕹️ FPS Boost (Giảm Lag MAX)", function(v)
         Lighting.GlobalShadows = true; pcall(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic end) 
     end
 end)
-createToggle(page2, "🔴 ESP Tên & Khoảng Cách", function(v) State.ESP = v end)
+createToggle(page2, "🔴 ESP người chơi", function(v) State.ESP = v end)
 createToggle(page2, "💡 Ánh sáng quanh người", function(v) 
     State.PlayerLight = v 
     if not v and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then local light = player.Character.HumanoidRootPart:FindFirstChild("PlayerPointLight"); if light then light:Destroy() end end
@@ -340,7 +340,7 @@ local function createPosItem(name, cframe)
     tpBtn.Font = Enum.Font.GothamBold; tpBtn.TextSize = 11; Instance.new("UICorner", tpBtn).CornerRadius = UDim.new(0, 6)
     local delBtn = Instance.new("TextButton", item)
     delBtn.Size = UDim2.new(0.15, 0, 0.6, 0); delBtn.Position = UDim2.new(0.81, 0, 0.2, 0)
-    delBtn.Text = "x"; delBtn.BackgroundColor3 = Theme.AccentOff; delBtn.TextColor3 = Color3.new(1,1,1)
+    delBtn.Text = "❌"; delBtn.BackgroundColor3 = Theme.AccentOff; delBtn.TextColor3 = Color3.new(1,1,1)
     delBtn.Font = Enum.Font.GothamBold; delBtn.TextSize = 12; Instance.new("UICorner", delBtn).CornerRadius = UDim.new(0, 6)
     
     tpBtn.MouseButton1Click:Connect(function() clickAnimate(tpBtn); if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then player.Character.HumanoidRootPart.CFrame = cframe end end)
