@@ -1,5 +1,5 @@
 -- ==========================================
--- MENU VIP PRO V25 (THÊM SLIDER CHỈNH TỐC ĐỘ)
+-- MENU VIP PRO V26 (TỐI ƯU SIÊU GIẢM LAG FPS BOOST)
 -- ==========================================
 repeat task.wait() until game:IsLoaded()
 
@@ -35,7 +35,7 @@ local Theme = {
 
 -- [1. GIAO DIỆN CHÍNH]
 local gui = Instance.new("ScreenGui")
-gui.Name = "MobileProMax_V25"
+gui.Name = "MobileProMax_V26"
 gui.ResetOnSpawn = false
 gui.DisplayOrder = 99999
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
@@ -105,7 +105,7 @@ headerCover.BackgroundColor3 = Theme.HeaderBg; headerCover.BackgroundTransparenc
 
 local titleLabel = Instance.new("TextLabel", header)
 titleLabel.Size = UDim2.new(1, 0, 1, 0); titleLabel.BackgroundTransparency = 1
-titleLabel.Text = " MENU VIP V25 "
+titleLabel.Text = " MENU VIP V26 "
 titleLabel.TextColor3 = Color3.new(1, 1, 1); titleLabel.Font = Enum.Font.GothamBlack; titleLabel.TextSize = 16
 local titleGradient = Instance.new("UIGradient", titleLabel)
 titleGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Theme.Brand), ColorSequenceKeypoint.new(1, Theme.BrandGradient)})
@@ -237,7 +237,6 @@ local function createToggle(parent, text, callback)
     end)
 end
 
--- [HÀM TẠO THANH TRƯỢT (SLIDER) MỚI]
 local function createSlider(parent, text, min, max, default, callback)
     local frame = Instance.new("Frame", parent)
     frame.Size = UDim2.new(0.9, 0, 0, 50)
@@ -292,33 +291,31 @@ local function createSlider(parent, text, min, max, default, callback)
     end
 
     track.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            updateSlider(input)
-        end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true; updateSlider(input) end
     end)
-    
     UIS.InputChanged:Connect(function(input)
-        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-            updateSlider(input)
-        end
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then updateSlider(input) end
     end)
-
     UIS.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = false
-        end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end
     end)
 
     callback(default)
     return bg
 end
 
+-- Tối ưu hóa cực mạnh từng Part
 local function optimizePart(obj)
     if State.LowGfx then
-        if obj:IsA("BasePart") or obj:IsA("MeshPart") then obj.Material = Enum.Material.Plastic; obj.Reflectance = 0
-        elseif obj:IsA("Decal") or obj:IsA("Texture") then obj.Transparency = 1
-        elseif obj:IsA("ParticleEmitter") or obj:IsA("Trail") then obj.Enabled = false end
+        if obj:IsA("BasePart") or obj:IsA("MeshPart") then 
+            obj.Material = Enum.Material.SmoothPlastic  -- Làm mịn hoàn toàn
+            obj.Reflectance = 0
+            obj.CastShadow = false -- Xóa bóng đổ của vật thể
+        elseif obj:IsA("Decal") or obj:IsA("Texture") then 
+            obj.Transparency = 1 -- Làm trong suốt texture
+        elseif obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Smoke") or obj:IsA("Fire") or obj:IsA("Sparkles") then 
+            obj.Enabled = false -- Tắt sạch hiệu ứng khói lửa
+        end
     end
 end
 
@@ -344,11 +341,37 @@ end)
 
 -- [TAB 2: BẢN ĐỒ]
 createToggle(page2, "👻 Đi xuyên tường", function(v) State.Noclip = v end)
-createToggle(page2, "🕹️ Giảm Lag (Low GFX)", function(v) 
+
+createToggle(page2, "🕹️ FPS Boost (Tối ưu cực mạnh)", function(v) 
     State.LowGfx = v 
-    if v then Lighting.GlobalShadows = false; pcall(function() settings().Rendering.QualityLevel = 1 end); for _, obj in pairs(workspace:GetDescendants()) do optimizePart(obj) end
-    else Lighting.GlobalShadows = true; pcall(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic end) end
+    if v then 
+        Lighting.GlobalShadows = false
+        Lighting.FogEnd = 9e9 -- Xóa sương mù
+        pcall(function() settings().Rendering.QualityLevel = 1 end)
+        
+        -- Tối ưu hóa Nước
+        pcall(function()
+            workspace.Terrain.WaterWaveSize = 0
+            workspace.Terrain.WaterWaveSpeed = 0
+            workspace.Terrain.WaterReflectance = 0
+            workspace.Terrain.WaterTransparency = 0
+            workspace.Terrain.Decoration = false
+        end)
+
+        -- Tắt hiệu ứng làm mờ, chói sáng
+        for _, obj in pairs(Lighting:GetChildren()) do
+            if obj:IsA("PostEffect") or obj:IsA("BlurEffect") or obj:IsA("SunRaysEffect") or obj:IsA("ColorCorrectionEffect") or obj:IsA("BloomEffect") or obj:IsA("DepthOfFieldEffect") then
+                obj.Enabled = false
+            end
+        end
+
+        for _, obj in pairs(workspace:GetDescendants()) do optimizePart(obj) end
+    else 
+        Lighting.GlobalShadows = true
+        pcall(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic end) 
+    end
 end)
+
 createToggle(page2, "👀 Định vị người chơi (ESP)", function(v) State.ESP = v end)
 createToggle(page2, "💡 Ánh sáng quanh người", function(v) 
     State.PlayerLight = v 
