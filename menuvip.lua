@@ -1,5 +1,5 @@
 -- ==========================================
--- MENU VIP PRO V27 (NÂNG CẤP ESP RADAR ĐỎ + HIỆN TÊN & KHOẢNG CÁCH)
+-- MENU VIP PRO V28 (FIX LỖI ESP, XÓA KHUNG & ICON)
 -- ==========================================
 repeat task.wait() until game:IsLoaded()
 
@@ -35,7 +35,7 @@ local Theme = {
 
 -- [1. GIAO DIỆN CHÍNH]
 local gui = Instance.new("ScreenGui")
-gui.Name = "MobileProMax_V27"
+gui.Name = "MobileProMax_V28"
 gui.ResetOnSpawn = false
 gui.DisplayOrder = 99999
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
@@ -105,7 +105,7 @@ headerCover.BackgroundColor3 = Theme.HeaderBg; headerCover.BackgroundTransparenc
 
 local titleLabel = Instance.new("TextLabel", header)
 titleLabel.Size = UDim2.new(1, 0, 1, 0); titleLabel.BackgroundTransparency = 1
-titleLabel.Text = " MENU VIP V27 "
+titleLabel.Text = " MENU VIP V28 "
 titleLabel.TextColor3 = Color3.new(1, 1, 1); titleLabel.Font = Enum.Font.GothamBlack; titleLabel.TextSize = 16
 local titleGradient = Instance.new("UIGradient", titleLabel)
 titleGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Theme.Brand), ColorSequenceKeypoint.new(1, Theme.BrandGradient)})
@@ -302,7 +302,7 @@ createToggle(page2, "🕹️ FPS Boost (Giảm Lag MAX)", function(v)
         Lighting.GlobalShadows = true; pcall(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic end) 
     end
 end)
-createToggle(page2, "🔴 ESP RADAR ĐỎ (Tên + K.Cách)", function(v) State.ESP = v end)
+createToggle(page2, "🔴 ESP Tên & Khoảng Cách", function(v) State.ESP = v end)
 createToggle(page2, "💡 Ánh sáng quanh người", function(v) 
     State.PlayerLight = v 
     if not v and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then local light = player.Character.HumanoidRootPart:FindFirstChild("PlayerPointLight"); if light then light:Destroy() end end
@@ -413,47 +413,52 @@ RunService.RenderStepped:Connect(function()
             end
         end
         
-        -- HỆ THỐNG ESP RADAR (Tên + K/Cách + Xuyên tường tuyệt đối)
+        -- HỆ THỐNG ESP (Chỉ hiện Tên và Khoảng cách màu đỏ, bám chặt vào Head)
         if State.ESP then
             for _, p in pairs(Players:GetPlayers()) do
                 if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") and p.Character:FindFirstChild("Head") then
+                    local head = p.Character.Head
                     
-                    -- 1. Viền đỏ xuyên tường xa nhất (Highlight)
-                    local hl = p.Character:FindFirstChild("MobileESP_HL") or Instance.new("Highlight", p.Character)
-                    hl.Name = "MobileESP_HL"; hl.Enabled = true
-                    hl.FillTransparency = 0.5; hl.OutlineTransparency = 0
-                    hl.OutlineColor = Color3.fromRGB(255, 0, 0) -- Màu đỏ viền
-                    hl.FillColor = Color3.fromRGB(255, 0, 0) -- Màu đỏ trong
-                    hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop -- Bắt buộc nhìn xuyên mọi vật thể xa nhất
+                    -- Tạo hoặc lấy BillboardGui đang gắn trên Head
+                    local bgui = head:FindFirstChild("MobileESP_Name")
+                    if not bgui then
+                        bgui = Instance.new("BillboardGui", head)
+                        bgui.Name = "MobileESP_Name"
+                        bgui.Size = UDim2.new(0, 200, 0, 50)
+                        bgui.StudsOffset = Vector3.new(0, 2, 0) -- Nổi lên trên đầu 2 mét
+                        bgui.AlwaysOnTop = true -- Xuyên tường 100%
+                        bgui.Adornee = head
+                        
+                        local tLabel = Instance.new("TextLabel", bgui)
+                        tLabel.Name = "NameLabel"
+                        tLabel.Size = UDim2.new(1, 0, 1, 0)
+                        tLabel.BackgroundTransparency = 1
+                        tLabel.TextColor3 = Color3.fromRGB(255, 50, 50) -- Màu đỏ tươi
+                        tLabel.TextStrokeTransparency = 0 -- Viền đen bên ngoài chữ
+                        tLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
+                        tLabel.Font = Enum.Font.GothamBold
+                        tLabel.TextSize = 12
+                    end
                     
-                    -- 2. Tên & Khoảng cách trên đầu (BillboardGui)
-                    local bgui = p.Character:FindFirstChild("MobileESP_Name") or Instance.new("BillboardGui", p.Character)
-                    bgui.Name = "MobileESP_Name"
-                    bgui.Size = UDim2.new(0, 200, 0, 50)
-                    bgui.StudsOffset = Vector3.new(0, 2.5, 0) -- Vị trí nổi trên đầu
-                    bgui.AlwaysOnTop = true -- Nổi xuyên tường
-                    
-                    local tLabel = bgui:FindFirstChild("TextLabel") or Instance.new("TextLabel", bgui)
-                    tLabel.Size = UDim2.new(1, 0, 1, 0); tLabel.BackgroundTransparency = 1
-                    tLabel.TextColor3 = Color3.fromRGB(255, 50, 50) -- Chữ màu Đỏ rực
-                    tLabel.TextStrokeTransparency = 0 -- Viền đen chống lóa
-                    tLabel.Font = Enum.Font.GothamBold; tLabel.TextSize = 11
-                    
-                    -- Tính toán khoảng cách (m)
+                    -- Cập nhật Text
                     if root then
                         local dist = math.floor((root.Position - p.Character.HumanoidRootPart.Position).Magnitude)
-                        tLabel.Text = "☠️ " .. p.DisplayName .. "\n[" .. dist .. "m]"
+                        bgui.NameLabel.Text = p.DisplayName .. "\n[" .. dist .. "m]"
                     else
-                        tLabel.Text = "☠️ " .. p.DisplayName
+                        bgui.NameLabel.Text = p.DisplayName
                     end
                 end
             end
         else
-            -- Dọn dẹp sạch sẽ khi tắt ESP
+            -- Xóa ESP khi tắt
             for _, p in pairs(Players:GetPlayers()) do
-                if p.Character then
-                    if p.Character:FindFirstChild("MobileESP_HL") then p.Character.MobileESP_HL:Destroy() end
-                    if p.Character:FindFirstChild("MobileESP_Name") then p.Character.MobileESP_Name:Destroy() end
+                if p.Character and p.Character:FindFirstChild("Head") then
+                    local bgui = p.Character.Head:FindFirstChild("MobileESP_Name")
+                    if bgui then bgui:Destroy() end
+                end
+                -- Đề phòng còn Highlight từ bản cũ
+                if p.Character and p.Character:FindFirstChild("MobileESP_HL") then 
+                    p.Character.MobileESP_HL:Destroy() 
                 end
             end
         end
